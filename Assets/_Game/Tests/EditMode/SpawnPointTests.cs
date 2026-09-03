@@ -70,7 +70,8 @@ namespace Transity.Tests
             var go = new GameObject(pointName);
             go.transform.position = position;
 
-            // The component registers itself in OnEnable, which fires on AddComponent.
+            // PlayerSpawnPoint is [ExecuteAlways], so OnEnable runs on AddComponent in
+            // edit mode too and the marker registers exactly as it would at runtime.
             var point = go.AddComponent<PlayerSpawnPoint>();
             var so = new UnityEditor.SerializedObject(point);
             so.FindProperty("context").enumValueIndex = (int)context;

@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using Transity.Combat;
 using Transity.Core;
+using Transity.Creatures;
 using Transity.Interaction;
 using Transity.Inventory;
 using Transity.Missions;
 using Transity.Networking;
 using Transity.Player;
-using Transity.Train;
 using Transity.UI;
+using Unity.AI.Navigation;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using Unity.Netcode.Transports.UTP;
@@ -36,13 +38,32 @@ namespace Transity.EditorTools
         const string NetworkDataFolder = "Assets/_Game/Data/Network";
         const string InputActionsPath = "Assets/_Game/Input/InputSystem_Actions.inputactions";
 
+        /// <summary>Layer 6. The interaction ray only tests this layer.</summary>
+        const int InteractableLayer = 6;
+
         [MenuItem("Tools/Transity/Build Vertical Slice Scaffold", priority = 0)]
-        public static void BuildAll()
+        public static void BuildAll() => BuildAll(regenerateDepotLayout: true);
+
+        /// <summary>
+        /// Rebuilds everything except the depot layout, so a hand-edited TrainHub is left
+        /// completely untouched. Use this once you have started arranging the room yourself.
+        /// </summary>
+        [MenuItem("Tools/Transity/Rebuild (Keep My Depot Edits)", priority = 1)]
+        public static void BuildKeepingDepot() => BuildAll(regenerateDepotLayout: false);
+
+        static void BuildAll(bool regenerateDepotLayout)
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
                 return;
             }
+
+            // Materials must exist before the models import, or the kit comes in grey.
+            KitImportSettings.ReimportKit();
+
+            // Same ordering problem for the equipment: atlases first, then materials, then
+            // the models that reference them.
+            EquipmentImportSettings.ReimportEquipment();
 
             GrayboxKit.EnsureFolder(ScenesFolder);
             GrayboxKit.EnsureFolder(ItemDataFolder);
@@ -52,15 +73,63 @@ namespace Transity.EditorTools
             GrayboxKit.EnsureFolder($"{PrefabsFolder}/Network");
 
             var registry = BuildItems();
+
+            // Creatures and deployables first: the item tuning table needs the deployable
+            // prefabs to point its trap and bait behaviours at.
+            var creatures = CreatureBuilder.BuildAll();
+            var contracts = ContractBuilder.Build(creatures.Definitions);
+            var deployables = DeployableBuilder.BuildAll();
+
+            EquipmentTuning.ApplyBehaviours(registry, deployables);
+
             var playerPrefab = BuildPlayerPrefab();
             var sessionScopePrefab = BuildSessionScopePrefab();
             var itemPrefabs = BuildItemPrefabs(registry);
-            var prefabList = BuildNetworkPrefabsList(sessionScopePrefab, itemPrefabs);
 
-            BuildBootScene(registry, playerPrefab, sessionScopePrefab, prefabList);
+            // Icons need the held models the tuning pass just wired on.
+            ItemIconRenderer.RenderAll(registry);
+
+            // The prefab assets exist on disk now, so their NetworkObjects can finally be
+            // given real, distinct hashes. Without this pass they all share one junk value.
+            NetworkIdFixup.RefreshPrefab(playerPrefab);
+            NetworkIdFixup.RefreshPrefab(sessionScopePrefab);
+            foreach (var itemPrefab in itemPrefabs)
+            {
+                NetworkIdFixup.RefreshPrefab(itemPrefab);
+            }
+
+            foreach (var creaturePrefab in creatures.Prefabs)
+            {
+                NetworkIdFixup.RefreshPrefab(creaturePrefab);
+            }
+
+            foreach (var deployable in deployables.Values)
+            {
+                NetworkIdFixup.RefreshPrefab(deployable);
+            }
+
+            AssetDatabase.SaveAssets();
+
+            var networked = new List<GameObject> { sessionScopePrefab };
+            networked.AddRange(itemPrefabs);
+            networked.AddRange(creatures.Prefabs);
+            networked.AddRange(deployables.Values);
+
+            var prefabList = BuildNetworkPrefabsList(networked);
+
+            BuildBootScene(registry, creatures.Registry, contracts, playerPrefab, sessionScopePrefab, prefabList);
             BuildMainMenuScene();
-            BuildTrainHubScene(registry);
-            BuildForestScene();
+
+            if (regenerateDepotLayout)
+            {
+                BuildTrainHubScene(registry);
+            }
+            else
+            {
+                Debug.Log("<b>Transity</b>: depot layout left as-is.");
+            }
+
+            BuildForestScene(registry);
             ApplyBuildSettings();
 
             AssetDatabase.SaveAssets();
@@ -69,6 +138,42 @@ namespace Transity.EditorTools
             EditorSceneManager.OpenScene($"{ScenesFolder}/{SceneCatalog.Boot}.unity");
             Debug.Log("<b>Transity</b>: scaffold built. Open the Boot scene and press Play, " +
                       "or use Multiplayer Play Mode for a second client.");
+        }
+
+        /// <summary>
+        /// Rebuilds creatures, contracts, deployables and item tuning without touching a
+        /// single scene. This is the balance loop: change a number in CreatureBuilder or
+        /// EquipmentTuning, run this, press Play.
+        /// </summary>
+        [MenuItem("Tools/Transity/Rebuild Gameplay Content", priority = 2)]
+        public static void RebuildGameplayContent()
+        {
+            var registry = AssetDatabase.LoadAssetAtPath<ItemRegistry>($"{ItemDataFolder}/ItemRegistry.asset");
+            if (registry == null)
+            {
+                Debug.LogError("No item registry; run the full scaffold first.");
+                return;
+            }
+
+            var creatures = CreatureBuilder.BuildAll();
+            ContractBuilder.Build(creatures.Definitions);
+            var deployables = DeployableBuilder.BuildAll();
+            EquipmentTuning.ApplyBehaviours(registry, deployables);
+
+            foreach (var prefab in creatures.Prefabs)
+            {
+                NetworkIdFixup.RefreshPrefab(prefab);
+            }
+
+            foreach (var prefab in deployables.Values)
+            {
+                NetworkIdFixup.RefreshPrefab(prefab);
+            }
+
+            AssetDatabase.SaveAssets();
+            Debug.Log($"<b>Transity</b>: rebuilt {creatures.Prefabs.Count} creatures, " +
+                      $"{deployables.Count} deployables and the equipment tuning. " +
+                      "Run the full scaffold if you added or removed a prefab.");
         }
 
         [MenuItem("Tools/Transity/Open Boot Scene", priority = 20)]
@@ -82,25 +187,59 @@ namespace Transity.EditorTools
 
         // ------------------------------------------------------------------ item data
 
+        /// <summary>
+        /// Graybox items with no Hunter Depot counterpart. The rest of the original
+        /// placeholder list is superseded by the art drop, so only these two still need a
+        /// crate stand-in; they keep their original ids so existing stashes survive.
+        /// </summary>
+        static readonly (string id, string label, int price, bool atRisk, ItemCategory category,
+            EquipmentSlot slot, int stash)[] LegacyItems =
+        {
+            ("item.ammo", "Ammo", 60, true, ItemCategory.Ammunition, EquipmentSlot.None, 99),
+            ("item.beartrap", "Bear Trap", 200, true, ItemCategory.Trap, EquipmentSlot.Utility, 30)
+        };
+
         static ItemRegistry BuildItems()
         {
-            // The items the first build ships with. Flashlight and radio are free starting
-            // kit; everything else is purchased and therefore at risk on an expedition.
-            var specs = new (string id, string label, int price, bool atRisk)[]
-            {
-                ("item.flashlight", "Flashlight", 0, false),
-                ("item.radio", "Radio", 0, false),
-                ("item.rifle", "Rifle", 450, true),
-                ("item.ammunition", "Ammunition", 60, true),
-                ("item.medkit", "Medical Kit", 120, true),
-                ("item.beartrap", "Bear Trap", 200, true),
-                ("item.bait", "Bait", 75, true),
-                ("item.container", "Containment Case", 300, true)
-            };
-
             var definitions = new List<ItemDefinition>();
 
-            foreach (var spec in specs)
+            // ---- Hunter Depot collection ----------------------------------------
+            var missingModels = EquipmentImportSettings.MissingModels();
+            if (missingModels.Count > 0)
+            {
+                Debug.LogWarning("Equipment models missing from Art/Equipment: " +
+                                 string.Join(", ", missingModels) +
+                                 ". Their items are still built, but with no mesh.");
+            }
+
+            foreach (var entry in EquipmentCatalog.Entries)
+            {
+                // Prefixed so a Hunter Depot asset cannot collide with a legacy one of the
+                // same display name (MedicalKit exists in both).
+                var path = $"{ItemDataFolder}/{entry.Model}.asset";
+                var definition = AssetDatabase.LoadAssetAtPath<ItemDefinition>(path);
+
+                if (definition == null)
+                {
+                    definition = ScriptableObject.CreateInstance<ItemDefinition>();
+                    AssetDatabase.CreateAsset(definition, path);
+                }
+
+                GrayboxKit.Wire(definition,
+                    ("itemId", entry.ItemId),
+                    ("displayName", entry.DisplayName),
+                    ("description", entry.Tradeoff),
+                    ("price", entry.Price),
+                    ("stashLimit", entry.StashLimit),
+                    ("atRiskOnExpedition", entry.AtRisk),
+                    ("category", (int)entry.Category),
+                    ("slot", (int)entry.Slot));
+
+                definitions.Add(definition);
+            }
+
+            // ---- retained graybox items ------------------------------------------
+            foreach (var spec in LegacyItems)
             {
                 var path = $"{ItemDataFolder}/{spec.label.Replace(" ", string.Empty)}.asset";
                 var definition = AssetDatabase.LoadAssetAtPath<ItemDefinition>(path);
@@ -111,14 +250,19 @@ namespace Transity.EditorTools
                     AssetDatabase.CreateAsset(definition, path);
                 }
 
-                Wire(definition,
+                GrayboxKit.Wire(definition,
                     ("itemId", spec.id),
                     ("displayName", spec.label),
                     ("price", spec.price),
-                    ("atRiskOnExpedition", spec.atRisk));
+                    ("stashLimit", spec.stash),
+                    ("atRiskOnExpedition", spec.atRisk),
+                    ("category", (int)spec.category),
+                    ("slot", (int)spec.slot));
 
                 definitions.Add(definition);
             }
+
+            ReportOrphanedItems(definitions);
 
             var registryPath = $"{ItemDataFolder}/ItemRegistry.asset";
             var registry = AssetDatabase.LoadAssetAtPath<ItemRegistry>(registryPath);
@@ -140,6 +284,102 @@ namespace Transity.EditorTools
             return registry;
         }
 
+        /// <summary>
+        /// Names item assets left in the data folder that nothing references any more --
+        /// the placeholders the Hunter Depot collection replaced, mostly. Reported rather
+        /// than deleted: they are cheap to leave lying about and expensive to get wrong.
+        /// </summary>
+        static void ReportOrphanedItems(List<ItemDefinition> live)
+        {
+            var orphans = new List<string>();
+
+            foreach (var guid in AssetDatabase.FindAssets("t:ItemDefinition", new[] { ItemDataFolder }))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var definition = AssetDatabase.LoadAssetAtPath<ItemDefinition>(path);
+
+                if (definition != null && !live.Contains(definition))
+                {
+                    orphans.Add(System.IO.Path.GetFileNameWithoutExtension(path));
+                }
+            }
+
+            if (orphans.Count > 0)
+            {
+                Debug.Log($"<b>Transity</b>: {orphans.Count} item assets are no longer in the " +
+                          "registry and will not appear in the shop: " + string.Join(", ", orphans) +
+                          ". Delete them with Tools > Transity > Delete Unused Item Assets.");
+            }
+        }
+
+        [MenuItem("Tools/Transity/Delete Unused Item Assets", priority = 46)]
+        static void DeleteUnusedItems()
+        {
+            var registry = AssetDatabase.LoadAssetAtPath<ItemRegistry>($"{ItemDataFolder}/ItemRegistry.asset");
+            if (registry == null)
+            {
+                Debug.LogError("No item registry; run the scaffold first.");
+                return;
+            }
+
+            var live = new HashSet<ItemDefinition>(registry.Items);
+            var doomed = new List<string>();
+
+            foreach (var guid in AssetDatabase.FindAssets("t:ItemDefinition", new[] { ItemDataFolder }))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!live.Contains(AssetDatabase.LoadAssetAtPath<ItemDefinition>(path)))
+                {
+                    doomed.Add(path);
+                }
+            }
+
+            // The world prefabs those items owned are dead weight too, and worse than the
+            // definitions: they carry NetworkObjects, so a stale one can still be dragged
+            // into a scene and spawn an item the registry cannot resolve.
+            var liveNames = new HashSet<string>();
+            foreach (var definition in registry.Items)
+            {
+                if (definition != null)
+                {
+                    liveNames.Add($"WorldItem_{definition.DisplayName.Replace(" ", string.Empty)}");
+                }
+            }
+
+            var interactables = $"{PrefabsFolder}/Interactables";
+            foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new[] { interactables }))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var name = System.IO.Path.GetFileNameWithoutExtension(path);
+
+                if (name.StartsWith("WorldItem_") && !liveNames.Contains(name))
+                {
+                    doomed.Add(path);
+                }
+            }
+
+            if (doomed.Count == 0)
+            {
+                Debug.Log("<b>Transity</b>: no unused item assets.");
+                return;
+            }
+
+            if (!EditorUtility.DisplayDialog("Delete unused item assets",
+                    $"Permanently delete {doomed.Count} item assets?\n\n" +
+                    string.Join("\n", doomed), "Delete", "Cancel"))
+            {
+                return;
+            }
+
+            foreach (var path in doomed)
+            {
+                AssetDatabase.DeleteAsset(path);
+            }
+
+            AssetDatabase.SaveAssets();
+            Debug.Log($"<b>Transity</b>: deleted {doomed.Count} unused item assets.");
+        }
+
         static List<GameObject> BuildItemPrefabs(ItemRegistry registry)
         {
             var crateMaterial = GrayboxKit.SolidMaterial("GB_Item", new Color(0.85f, 0.65f, 0.25f));
@@ -152,18 +392,40 @@ namespace Transity.EditorTools
                     continue;
                 }
 
+                var entry = EquipmentCatalog.FindByItemId(definition.ItemId);
                 var safeName = definition.DisplayName.Replace(" ", string.Empty);
                 var path = $"{PrefabsFolder}/Interactables/WorldItem_{safeName}.prefab";
 
-                var root = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                root.name = $"WorldItem_{safeName}";
-                root.transform.localScale = new Vector3(0.3f, 0.2f, 0.45f);
-                GrayboxKit.Paint(root, crateMaterial);
+                var root = new GameObject($"WorldItem_{safeName}");
+                var built = entry != null && BuildEquipmentVisual(root, entry);
+
+                if (!built)
+                {
+                    // No Hunter Depot mesh for this one (the retained graybox items, or a
+                    // model that failed to import): fall back to the orange crate so the
+                    // item is still pickable in the world.
+                    var crate = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    crate.name = "Mesh";
+                    crate.transform.SetParent(root.transform, false);
+                    crate.transform.localScale = new Vector3(0.3f, 0.2f, 0.45f);
+                    Object.DestroyImmediate(crate.GetComponent<Collider>());
+                    GrayboxKit.Paint(crate, crateMaterial);
+
+                    var box = root.AddComponent<BoxCollider>();
+                    box.size = new Vector3(0.3f, 0.2f, 0.45f);
+                }
+
+                // Whole hierarchy: the collider sits on the root, but a stray child on the
+                // default layer is the kind of thing that quietly breaks a later change.
+                foreach (var transform in root.GetComponentsInChildren<Transform>(true))
+                {
+                    transform.gameObject.layer = InteractableLayer;
+                }
 
                 root.AddComponent<NetworkObject>();
                 var worldItem = root.AddComponent<WorldItem>();
 
-                Wire(worldItem,
+                GrayboxKit.Wire(worldItem,
                     ("definition", definition),
                     ("prompt", $"Pick up {definition.DisplayName}"),
                     ("interactionRange", 2.5f));
@@ -171,11 +433,74 @@ namespace Transity.EditorTools
                 var prefab = PrefabUtility.SaveAsPrefabAsset(root, path);
                 Object.DestroyImmediate(root);
 
-                Wire(definition, ("worldPrefab", prefab));
+                GrayboxKit.Wire(definition, ("worldPrefab", prefab));
                 prefabs.Add(prefab);
             }
 
             return prefabs;
+        }
+
+        /// <summary>
+        /// Parents the imported equipment mesh under <paramref name="root"/> and fits a
+        /// single collider to it.
+        ///
+        /// The collider is measured from the imported renderers rather than from the art
+        /// manifest's dimensions, because the manifest quotes the design size while the
+        /// generator's bevels and fittings push the real silhouette a little past it. What
+        /// the player's interaction ray hits should match what they can see.
+        /// </summary>
+        static bool BuildEquipmentVisual(GameObject root, EquipmentCatalog.Entry entry)
+        {
+            var model = EquipmentImportSettings.LoadModel(entry.Model);
+            if (model == null)
+            {
+                return false;
+            }
+
+            var instance = (GameObject)PrefabUtility.InstantiatePrefab(model, root.transform);
+            instance.name = "Mesh";
+            instance.transform.localPosition = Vector3.zero;
+            instance.transform.localRotation = Quaternion.identity;
+
+            var renderers = instance.GetComponentsInChildren<MeshRenderer>(true);
+            if (renderers.Length == 0)
+            {
+                Object.DestroyImmediate(instance);
+                return false;
+            }
+
+            var bounds = renderers[0].bounds;
+            for (var i = 1; i < renderers.Length; i++)
+            {
+                bounds.Encapsulate(renderers[i].bounds);
+            }
+
+            // Instantiated at the origin with no rotation, so world bounds are already the
+            // prefab-local ones.
+            var size = bounds.size;
+            var center = bounds.center;
+
+            if (entry.Collider == EquipmentCatalog.ColliderKind.Capsule)
+            {
+                var capsule = root.AddComponent<CapsuleCollider>();
+                capsule.center = center;
+
+                // Longest axis is the barrel of a torch or the body of a canister.
+                var direction = size.x >= size.y && size.x >= size.z ? 0
+                    : size.y >= size.z ? 1 : 2;
+                capsule.direction = direction;
+                capsule.height = size[direction];
+                capsule.radius = 0.5f * Mathf.Max(
+                    size[(direction + 1) % 3], size[(direction + 2) % 3]);
+            }
+            else
+            {
+                var box = root.AddComponent<BoxCollider>();
+                box.center = center;
+                box.size = size;
+            }
+
+            return true;
         }
 
         // -------------------------------------------------------------------- prefabs
@@ -200,6 +525,9 @@ namespace Transity.EditorTools
             controller.slopeLimit = 50f;
             controller.stepOffset = 0.35f;
             controller.skinWidth = 0.02f;
+            // Slightly generous so the player does not catch on the 0.16 m floor tile lip or
+            // the kit's bevelled trim.
+            controller.minMoveDistance = 0f;
 
             root.AddComponent<NetworkObject>();
 
@@ -211,14 +539,12 @@ namespace Transity.EditorTools
             networkTransform.SyncScaleY = false;
             networkTransform.SyncScaleZ = false;
 
-            // Visible body, hidden from its owner by PlayerCharacter.
-            var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            body.name = "Body";
-            body.transform.SetParent(root.transform, false);
-            body.transform.localPosition = new Vector3(0f, 0.9f, 0f);
-            body.transform.localScale = new Vector3(0.6f, 0.9f, 0.6f);
-            Object.DestroyImmediate(body.GetComponent<Collider>());
-            GrayboxKit.Paint(body, bodyMaterial);
+            // Visible body, hidden from its owner by PlayerCharacter. Uses the rigged
+            // character when it has been imported, and falls back to the old capsule so the
+            // scaffold still produces a working player on a fresh clone.
+            CharacterImportSettings.EnsureAnimatorControllers();
+            var roster = BuildCharacterRoster();
+            var body = BuildPlayerBody(root.transform, bodyMaterial, roster, out var bodies);
 
             var head = GrayboxKit.Empty("Head", root.transform, new Vector3(0f, 1.65f, 0f));
 
@@ -231,6 +557,27 @@ namespace Transity.EditorTools
 
             var dropOrigin = GrayboxKit.Empty("DropOrigin", head.transform, new Vector3(0f, -0.2f, 0.4f));
 
+            var muzzleObject = GrayboxKit.Empty("MuzzleFlash", cameraObject.transform, new Vector3(0f, 0f, 0.6f));
+            var muzzleLight = muzzleObject.AddComponent<Light>();
+            muzzleLight.type = LightType.Point;
+            muzzleLight.color = new Color(1f, 0.86f, 0.6f);
+            muzzleLight.range = 14f;
+            muzzleLight.intensity = 900f;
+            muzzleLight.shadows = LightShadows.None;
+            muzzleLight.enabled = false;
+
+            // Worn light. Offset to the shoulder so it throws its shadows off-axis rather
+            // than flatly ahead, but still parented to the head pivot: a torch that cannot
+            // be aimed up at a canopy is realistic and miserable.
+            var beamObject = GrayboxKit.Empty("WornLight", head.transform, new Vector3(0.12f, -0.25f, 0.16f));
+            var beam = beamObject.AddComponent<Light>();
+            beam.type = LightType.Spot;
+            beam.range = 22f;
+            beam.spotAngle = 48f;
+            beam.intensity = 900f;
+            beam.shadows = LightShadows.Soft;
+            beam.enabled = false;
+
             var input = root.AddComponent<PlayerInputReader>();
             var look = root.AddComponent<PlayerLook>();
             var movement = root.AddComponent<FirstPersonController>();
@@ -239,15 +586,127 @@ namespace Transity.EditorTools
             var hotbar = root.AddComponent<PlayerHotbarInput>();
             root.AddComponent<PlayerFeedback>();
             var character = root.AddComponent<PlayerCharacter>();
+            var stationFocus = root.AddComponent<StationFocusController>();
 
-            Wire(input, ("actions", actions), ("actionMapName", "Player"));
-            Wire(look, ("body", root.transform), ("headPivot", head.transform), ("input", input));
-            Wire(movement, ("input", input), ("headPivot", head.transform));
-            Wire(interactor, ("input", input), ("rayOrigin", cameraObject.transform));
-            Wire(inventory, ("dropOrigin", dropOrigin.transform));
-            Wire(hotbar, ("input", input), ("inventory", inventory));
+            root.AddComponent<PlayerIdentity>();
+            root.AddComponent<PlayerWallet>();
 
-            Wire(character,
+            // Players do not regenerate and their wounds do not clot on their own: a medkit
+            // is the only way to stop bleeding, which is what makes carrying one a decision.
+            var health = root.AddComponent<Health>();
+            GrayboxKit.Wire(health,
+                ("maxHealth", 100f),
+                ("regenPerSecond", 0f),
+                ("bleedPerSecond", 1.6f),
+                ("bleedDuration", 0f),
+                ("damageTakenMultiplier", 1f));
+
+            var vitals = root.AddComponent<PlayerVitals>();
+            var equipment = root.AddComponent<PlayerEquipment>();
+            var playerLight = root.AddComponent<PlayerLight>();
+            var spectator = root.AddComponent<SpectatorController>();
+
+            // Which character this player is wearing, replicated so everyone sees the same.
+            var skin = root.AddComponent<CharacterSkin>();
+            GrayboxKit.Wire(skin, ("roster", roster));
+
+            var skinSo = new SerializedObject(skin);
+            var bodyList = skinSo.FindProperty("bodies");
+            bodyList.arraySize = bodies.Count;
+            for (var i = 0; i < bodies.Count; i++)
+            {
+                bodyList.GetArrayElementAtIndex(i).objectReferenceValue = bodies[i];
+            }
+
+            skinSo.ApplyModifiedPropertiesWithoutUndo();
+
+            // Each player keeps their own stash. Player NetworkObjects survive the
+            // networked scene loads, so it persists for the whole session.
+            root.AddComponent<PlayerStash>();
+
+            GrayboxKit.Wire(input, ("actions", actions), ("actionMapName", "Player"));
+            GrayboxKit.Wire(look, ("body", root.transform), ("headPivot", head.transform), ("input", input));
+            GrayboxKit.Wire(movement, ("input", input), ("headPivot", head.transform));
+            // Layer 7 = Player, layer 6 = Interactable (see TagManager). Casting only
+            // against interactables keeps the player capsule from blocking its own aim, and
+            // occlusion tests Default so walls still break line of sight.
+            foreach (var t in root.GetComponentsInChildren<Transform>(true))
+            {
+                t.gameObject.layer = 7;
+            }
+
+            // Layer 6 is props and dropped gear; layer 9 is creatures, which have to be
+            // reachable so a corpse can be tagged and a sedated one contained. Alive ones
+            // refuse the interaction themselves, so nothing prompts at a living creature.
+            // Cast from the head pivot rather than the camera. They are the same transform
+            // position in first person -- the camera is the pivot's child at zero -- but
+            // the third-person view moves the camera back, and reach must not move with it.
+            GrayboxKit.Wire(interactor,
+                ("input", input),
+                ("rayOrigin", head.transform),
+                ("interactableMask", (1 << 6) | (1 << 9)),
+                ("occlusionMask", 1),
+                ("maxRange", 3.2f));
+            GrayboxKit.Wire(inventory, ("dropOrigin", dropOrigin.transform), ("capacity", 5));
+            GrayboxKit.Wire(hotbar, ("input", input), ("inventory", inventory));
+            GrayboxKit.Wire(stationFocus, ("character", character), ("input", input));
+
+            GrayboxKit.Wire(vitals,
+                ("health", health),
+                ("inventory", inventory),
+                ("movement", movement),
+                ("character", character),
+                ("bodyRoot", body.transform),
+                ("friendlyFireMultiplier", 0.35f));
+
+            // Shots hit the world, other players, creatures and deployables -- layers
+            // 0, 7, 9 and 10. Not layer 6: an interactable prop should not eat a bullet
+            // meant for what is behind it.
+            GrayboxKit.Wire(equipment,
+                ("input", input),
+                ("inventory", inventory),
+                ("movement", movement),
+                ("look", look),
+                ("character", character),
+                ("health", health),
+                ("remoteHandSocket", head.transform),
+                ("muzzleLight", muzzleLight),
+                ("defaultFieldOfView", 70f),
+                ("shotMask", (1 << 0) | (1 << 7) | (1 << 9) | (1 << 10)));
+
+            GrayboxKit.Wire(playerLight,
+                ("inventory", inventory),
+                ("input", input),
+                ("beam", beam));
+
+            GrayboxKit.Wire(spectator, ("character", character), ("input", input));
+
+            // Added after CharacterSkin so it can find the bodies it built.
+            var playerAnimator = root.AddComponent<PlayerAnimator>();
+            GrayboxKit.Wire(playerAnimator,
+                ("skin", skin),
+                ("movement", movement),
+                ("input", input),
+                ("vitals", vitals),
+                ("equipment", equipment));
+
+            // Owner sees their own body: legs and arms when they look down, no head.
+            var firstPersonBody = root.AddComponent<FirstPersonBody>();
+            GrayboxKit.Wire(firstPersonBody,
+                ("character", character),
+                ("skin", skin));
+
+            // Alt+5. Collides against Default only -- the interactable and creature layers
+            // should not shove the camera about.
+            var thirdPerson = root.AddComponent<ThirdPersonView>();
+            GrayboxKit.Wire(thirdPerson,
+                ("character", character),
+                ("skin", skin),
+                ("firstPersonBody", firstPersonBody),
+                ("stationFocus", stationFocus),
+                ("collisionMask", 1));
+
+            GrayboxKit.Wire(character,
                 ("playerCamera", camera),
                 ("audioListener", listener),
                 ("input", input),
@@ -255,15 +714,164 @@ namespace Transity.EditorTools
                 ("movement", movement),
                 ("networkTransform", networkTransform));
 
+            // Left empty on purpose: CharacterSkin owns renderer visibility now, because it
+            // is the only thing that knows which body is currently active.
             var characterSo = new SerializedObject(character);
-            var renderers = characterSo.FindProperty("bodyRenderers");
-            renderers.arraySize = 1;
-            renderers.GetArrayElementAtIndex(0).objectReferenceValue = body.GetComponent<Renderer>();
+            characterSo.FindProperty("bodyRenderers").arraySize = 0;
             characterSo.ApplyModifiedPropertiesWithoutUndo();
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, $"{PrefabsFolder}/Player/PlayerCharacter.prefab");
             Object.DestroyImmediate(root);
             return prefab;
+        }
+
+        const string CharacterFolder = "Assets/_Game/Art/Characters";
+        const string PlayerCharacterModel = CharacterFolder + "/CH_AdventurerGirl.fbx";
+        const string RosterPath = "Assets/_Game/Data/Characters/CharacterRoster.asset";
+
+        /// <summary>
+        /// Builds the roster from the importer's character table, so the list of models and
+        /// the list of playable characters cannot drift apart.
+        /// </summary>
+        static CharacterRoster BuildCharacterRoster()
+        {
+            GrayboxKit.EnsureFolder("Assets/_Game/Data/Characters");
+
+            var roster = AssetDatabase.LoadAssetAtPath<CharacterRoster>(RosterPath);
+            if (roster == null)
+            {
+                roster = ScriptableObject.CreateInstance<CharacterRoster>();
+                AssetDatabase.CreateAsset(roster, RosterPath);
+            }
+
+            var entries = new List<(string Model, string Display, bool Rigged, GameObject Prefab)>();
+
+            foreach (var entry in CharacterImportSettings.Characters)
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{CharacterFolder}/{entry.Model}.fbx");
+                if (prefab == null)
+                {
+                    Debug.LogWarning($"Character model missing: {entry.Model}.fbx");
+                    continue;
+                }
+
+                entries.Add((entry.Model, Prettify(entry.Model), entry.Rigged, prefab));
+            }
+
+            var so = new SerializedObject(roster);
+            var list = so.FindProperty("characters");
+            list.arraySize = entries.Count;
+
+            for (var i = 0; i < entries.Count; i++)
+            {
+                var element = list.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("id").stringValue = entries[i].Model;
+                element.FindPropertyRelative("displayName").stringValue = entries[i].Display;
+                element.FindPropertyRelative("prefab").objectReferenceValue = entries[i].Prefab;
+                element.FindPropertyRelative("rigged").boolValue = entries[i].Rigged;
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(roster);
+            return roster;
+        }
+
+        /// <summary>CH_AdventurerGirl -> "Adventurer Girl".</summary>
+        static string Prettify(string modelName)
+        {
+            var stripped = modelName.StartsWith("CH_") ? modelName[3..] : modelName;
+            var builder = new System.Text.StringBuilder();
+
+            for (var i = 0; i < stripped.Length; i++)
+            {
+                if (i > 0 && char.IsUpper(stripped[i]) && !char.IsUpper(stripped[i - 1]))
+                {
+                    builder.Append(' ');
+                }
+
+                builder.Append(stripped[i]);
+            }
+
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Builds the visible body. Prefers the rigged character; falls back to a capsule so
+        /// the scaffold never produces a player with nothing to look at.
+        /// </summary>
+        static GameObject BuildPlayerBody(Transform parent, Material fallbackMaterial,
+            CharacterRoster roster, out List<GameObject> bodies)
+        {
+            bodies = new List<GameObject>();
+
+            var root = GrayboxKit.Empty("Body", parent, Vector3.zero);
+
+            if (roster != null && roster.Count > 0)
+            {
+                CharacterImportSettings.EnsureAllCharacterMaterials();
+
+                for (var i = 0; i < roster.Count; i++)
+                {
+                    var entry = roster.Get(i);
+                    if (entry.prefab == null)
+                    {
+                        continue;
+                    }
+
+                    var instance = (GameObject)PrefabUtility.InstantiatePrefab(entry.prefab, root.transform);
+                    instance.name = entry.id;
+
+                    // Exported at 1.8 m with the feet on the origin, so every character lines
+                    // up with the CharacterController without a per-model fudge factor.
+                    instance.transform.localPosition = Vector3.zero;
+                    instance.transform.localRotation = Quaternion.identity;
+
+                    if (entry.rigged)
+                    {
+                        if (!instance.TryGetComponent<Animator>(out var animator))
+                        {
+                            animator = instance.AddComponent<Animator>();
+                        }
+
+                        animator.applyRootMotion = false;
+
+                        // Remote players still need their bones updated while off screen,
+                        // because their body is what everyone else is looking at.
+                        animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+
+                        var controller = CharacterImportSettings.ControllerFor(entry.id);
+                        if (controller != null)
+                        {
+                            animator.runtimeAnimatorController = controller;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"No animator controller for {entry.id}.");
+                        }
+                    }
+
+                    // Only the first is active; CharacterSkin turns the chosen one on.
+                    instance.SetActive(i == 0);
+                    bodies.Add(instance);
+                }
+
+                if (bodies.Count > 0)
+                {
+                    return root;
+                }
+            }
+
+            Debug.LogWarning("No character models found; falling back to the capsule placeholder.");
+
+            var capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            capsule.name = "BodyPlaceholder";
+            capsule.transform.SetParent(root.transform, false);
+            capsule.transform.localPosition = new Vector3(0f, 0.9f, 0f);
+            capsule.transform.localScale = new Vector3(0.6f, 0.9f, 0.6f);
+            Object.DestroyImmediate(capsule.GetComponent<Collider>());
+            GrayboxKit.Paint(capsule, fallbackMaterial);
+            bodies.Add(capsule);
+            return root;
         }
 
         static GameObject BuildSessionScopePrefab()
@@ -272,12 +880,21 @@ namespace Transity.EditorTools
             root.AddComponent<NetworkObject>();
             root.AddComponent<MissionDirector>();
 
+            // Lives beside the director so it hears every phase change and survives the
+            // train-to-forest load with it.
+            root.AddComponent<CollectorContract>();
+
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, $"{PrefabsFolder}/Network/SessionScope.prefab");
             Object.DestroyImmediate(root);
             return prefab;
         }
 
-        static NetworkPrefabsList BuildNetworkPrefabsList(GameObject sessionScope, List<GameObject> items)
+        /// <summary>
+        /// Everything the server can spawn at runtime: the session scope, dropped items,
+        /// creatures and deployables. The player prefab is registered separately via
+        /// NetworkConfig.PlayerPrefab, so it deliberately does not appear here.
+        /// </summary>
+        static NetworkPrefabsList BuildNetworkPrefabsList(List<GameObject> all)
         {
             var path = $"{NetworkDataFolder}/TransityNetworkPrefabs.asset";
             var list = AssetDatabase.LoadAssetAtPath<NetworkPrefabsList>(path);
@@ -287,11 +904,6 @@ namespace Transity.EditorTools
                 list = ScriptableObject.CreateInstance<NetworkPrefabsList>();
                 AssetDatabase.CreateAsset(list, path);
             }
-
-            // The player prefab is registered separately via NetworkConfig.PlayerPrefab,
-            // so it deliberately does not appear here.
-            var all = new List<GameObject> { sessionScope };
-            all.AddRange(items);
 
             // The backing field is internal, so this goes through SerializedObject rather
             // than NetworkPrefabsList.Add -- which also lets a re-run clear stale entries.
@@ -309,16 +921,30 @@ namespace Transity.EditorTools
 
         // --------------------------------------------------------------------- scenes
 
-        static void BuildBootScene(ItemRegistry registry, GameObject playerPrefab,
+        static void BuildBootScene(ItemRegistry registry, CreatureRegistry creatures,
+            ContractRegistry contracts, GameObject playerPrefab,
             GameObject sessionScopePrefab, NetworkPrefabsList prefabList)
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             var systems = new GameObject("Transity Systems");
-            systems.AddComponent<GameBootstrap>();
+            var bootstrap = systems.AddComponent<GameBootstrap>();
+
+            // Straight into the depot, no menu. Flip with Tools > Transity > Startup Mode.
+            GrayboxKit.Wire(bootstrap, ("startupMode", (int)StartupMode.OfflineHost));
             var content = systems.AddComponent<GameContent>();
             systems.AddComponent<SessionManager>();
-            Wire(content, ("itemRegistry", registry));
+            GrayboxKit.Wire(content,
+                ("itemRegistry", registry),
+                ("creatureRegistry", creatures),
+                ("contractRegistry", contracts));
+
+            // The score. Persistent, because it has to survive the scene load into the
+            // forest and back without restarting.
+            var music = new GameObject("TensionMusic");
+            music.AddComponent<Transity.Audio.TensionMusic>();
+            var musicRoot = music.AddComponent<PersistentRoot>();
+            GrayboxKit.Wire(musicRoot, ("uniqueKey", "TensionMusic"));
 
             // NetworkManager must stay a root object: it only calls DontDestroyOnLoad on
             // itself when it has no parent.
@@ -334,16 +960,47 @@ namespace Transity.EditorTools
             networkManager.NetworkConfig.Prefabs.NetworkPrefabsLists = new List<NetworkPrefabsList> { prefabList };
             EditorUtility.SetDirty(networkManager);
 
-            Wire(serverBootstrap, ("sessionScopePrefab", sessionScopePrefab));
+            GrayboxKit.Wire(serverBootstrap, ("sessionScopePrefab", sessionScopePrefab));
 
             BuildPersistentHud();
+            BuildStationScreenHost();
             BuildBootSplash();
 
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(0.25f, 0.27f, 0.32f);
 
-            EditorSceneManager.MarkSceneDirty(scene);
-            EditorSceneManager.SaveScene(scene, $"{ScenesFolder}/{SceneCatalog.Boot}.unity");
+            SaveSceneWithNetworkIds(scene, SceneCatalog.Boot);
+        }
+
+        static void BuildStationScreenHost()
+        {
+            // The one EventSystem for the whole game, created here so it exists before any
+            // scene that needs it and survives every load.
+            var events = new GameObject("EventSystem",
+                typeof(EventSystem), typeof(InputSystemUIInputModule));
+            var persistent = events.AddComponent<PersistentRoot>();
+            GrayboxKit.Wire(persistent, ("uniqueKey", "EventSystem"));
+
+            // Builds its own canvas (and an EventSystem when none exists) at runtime, so it
+            // needs nothing wired here.
+            var host = new GameObject("StationScreens");
+            host.AddComponent<StationScreenUI>();
+
+            // Renders the player's character for the wardrobe. Pointing this at a different
+            // prefab is all a skin swap will need.
+            var preview = host.AddComponent<CharacterPreview>();
+            var previewRoster = AssetDatabase.LoadAssetAtPath<CharacterRoster>(RosterPath);
+
+            if (previewRoster != null && previewRoster.Count > 0)
+            {
+                GrayboxKit.Wire(preview,
+                    ("roster", previewRoster),
+                    ("characterPrefab", previewRoster.Get(0).prefab));
+            }
+            else
+            {
+                Debug.LogWarning("No character roster for the wardrobe preview.");
+            }
         }
 
         static void BuildBootSplash()
@@ -363,35 +1020,83 @@ namespace Transity.EditorTools
             var canvas = CreateCanvas("HUD", persistent: true);
             var hud = canvas.gameObject.AddComponent<HudUI>();
 
-            var prompt = CreateLabel(canvas.transform, "Prompt", string.Empty, 22,
-                new Vector2(0f, -90f), new Vector2(700f, 40f), TextAnchor.MiddleCenter);
+            // Prompt sits on a soft plate so it stays readable against a bright wall or a
+            // dark corner, rather than white text hoping for the best.
+            var promptPlate = CreatePlate(canvas.transform, "PromptPlate",
+                new Vector2(0f, -96f), new Vector2(460f, 46f), new Color(0f, 0f, 0f, 0.55f));
+            var prompt = CreateLabel(promptPlate, "Prompt", string.Empty, 21,
+                Vector2.zero, new Vector2(440f, 46f), TextAnchor.MiddleCenter);
+            Stretch(prompt.rectTransform, 8f);
 
-            var message = CreateLabel(canvas.transform, "Message", string.Empty, 20,
-                new Vector2(0f, -140f), new Vector2(700f, 40f), TextAnchor.MiddleCenter);
-            message.color = new Color(1f, 0.6f, 0.5f);
+            var messagePlate = CreatePlate(canvas.transform, "MessagePlate",
+                new Vector2(0f, -150f), new Vector2(520f, 40f), new Color(0.25f, 0.05f, 0.05f, 0.6f));
+            var message = CreateLabel(messagePlate, "Message", string.Empty, 19,
+                Vector2.zero, new Vector2(500f, 40f), TextAnchor.MiddleCenter);
+            Stretch(message.rectTransform, 8f);
+            message.color = new Color(1f, 0.72f, 0.62f);
 
-            var session = CreateLabel(canvas.transform, "SessionCode", string.Empty, 18,
-                Vector2.zero, new Vector2(320f, 30f), TextAnchor.UpperLeft);
-            Anchor(session.rectTransform, new Vector2(0f, 1f), new Vector2(20f, -20f));
+            var session = CreateLabel(canvas.transform, "SessionCode", string.Empty, 17,
+                Vector2.zero, new Vector2(340f, 28f), TextAnchor.UpperLeft);
+            session.color = new Color(0.78f, 0.82f, 0.86f, 0.85f);
+            Anchor(session.rectTransform, new Vector2(0f, 1f), new Vector2(24f, -22f));
 
-            var phase = CreateLabel(canvas.transform, "Phase", string.Empty, 18,
-                Vector2.zero, new Vector2(320f, 30f), TextAnchor.UpperRight);
-            Anchor(phase.rectTransform, new Vector2(1f, 1f), new Vector2(-20f, -20f));
+            var phase = CreateLabel(canvas.transform, "Phase", string.Empty, 17,
+                Vector2.zero, new Vector2(340f, 28f), TextAnchor.UpperRight);
+            phase.color = new Color(0.95f, 0.78f, 0.45f, 0.9f);
+            Anchor(phase.rectTransform, new Vector2(1f, 1f), new Vector2(-24f, -22f));
 
-            var crosshairObject = new GameObject("Crosshair", typeof(Image));
-            crosshairObject.transform.SetParent(canvas.transform, false);
-            var crosshair = crosshairObject.GetComponent<Image>();
-            crosshair.color = new Color(1f, 1f, 1f, 0.35f);
-            var crosshairRect = crosshairObject.GetComponent<RectTransform>();
-            crosshairRect.sizeDelta = new Vector2(6f, 6f);
+            // Four ticks around a centre dot: legible on any background, and the gap gives
+            // the eye something to aim with.
+            var crosshairRoot = new GameObject("Crosshair", typeof(RectTransform), typeof(Image));
+            crosshairRoot.transform.SetParent(canvas.transform, false);
+            var crosshair = crosshairRoot.GetComponent<Image>();
+            crosshair.color = new Color(1f, 1f, 1f, 0.5f);
+            var crosshairRect = crosshairRoot.GetComponent<RectTransform>();
+            crosshairRect.sizeDelta = new Vector2(3f, 3f);
             crosshairRect.anchoredPosition = Vector2.zero;
 
-            Wire(hud,
+            var ticks = new (Vector2 offset, Vector2 size)[]
+            {
+                (new Vector2(0f, 9f), new Vector2(2f, 7f)),
+                (new Vector2(0f, -9f), new Vector2(2f, 7f)),
+                (new Vector2(-9f, 0f), new Vector2(7f, 2f)),
+                (new Vector2(9f, 0f), new Vector2(7f, 2f))
+            };
+
+            foreach (var (offset, size) in ticks)
+            {
+                var tick = new GameObject("Tick", typeof(RectTransform), typeof(Image));
+                tick.transform.SetParent(crosshairRoot.transform, false);
+                tick.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.35f);
+                var tickRect = tick.GetComponent<RectTransform>();
+                tickRect.sizeDelta = size;
+                tickRect.anchoredPosition = offset;
+            }
+
+            GrayboxKit.Wire(hud,
                 ("promptLabel", prompt),
                 ("sessionLabel", session),
                 ("phaseLabel", phase),
                 ("messageLabel", message),
-                ("crosshair", crosshair));
+                ("crosshair", crosshair),
+                ("promptPlate", promptPlate.GetComponent<Image>()),
+                ("messagePlate", messagePlate.GetComponent<Image>()));
+        }
+
+        /// <summary>A rounded-ish backing plate for HUD text.</summary>
+        static RectTransform CreatePlate(Transform parent, string plateName,
+            Vector2 anchoredPosition, Vector2 size, Color color)
+        {
+            var go = new GameObject(plateName, typeof(RectTransform), typeof(Image));
+            var rect = (RectTransform)go.transform;
+            rect.SetParent(parent, false);
+            rect.sizeDelta = size;
+            rect.anchoredPosition = anchoredPosition;
+
+            var image = go.GetComponent<Image>();
+            image.color = color;
+            image.raycastTarget = false;
+            return rect;
         }
 
         static void BuildMainMenuScene()
@@ -403,8 +1108,8 @@ namespace Transity.EditorTools
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.06f, 0.07f, 0.09f);
 
-            var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
-            eventSystem.transform.SetParent(null);
+            // No EventSystem here on purpose. Boot creates a persistent one, and a second
+            // in this scene is what produced the "there are 2 event systems" warning.
 
             var canvas = CreateCanvas("Menu Canvas", persistent: false);
             var menu = canvas.gameObject.AddComponent<MainMenuUI>();
@@ -427,7 +1132,7 @@ namespace Transity.EditorTools
             var status = CreateLabel(canvas.transform, "Status", "Connecting to Unity services...", 18,
                 new Vector2(0f, -210f), new Vector2(760f, 80f), TextAnchor.MiddleCenter);
 
-            Wire(menu,
+            GrayboxKit.Wire(menu,
                 ("hostButton", hostButton),
                 ("joinButton", joinButton),
                 ("quitButton", quitButton),
@@ -437,87 +1142,78 @@ namespace Transity.EditorTools
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(0.25f, 0.27f, 0.32f);
 
-            EditorSceneManager.MarkSceneDirty(scene);
-            EditorSceneManager.SaveScene(scene, $"{ScenesFolder}/{SceneCatalog.MainMenu}.unity");
+            SaveSceneWithNetworkIds(scene, SceneCatalog.MainMenu);
         }
 
+        /// <summary>
+        /// Rebuilds the depot without discarding the scene.
+        ///
+        /// Rather than starting from an empty scene, this opens the existing TrainHub and
+        /// deletes only the roots it generated last time. Everything else -- anything you
+        /// added yourself, and in particular anything under "_Handmade" -- is left exactly
+        /// where it was.
+        ///
+        /// The limit is worth being clear about: objects *inside* a generated root are still
+        /// replaced, because that whole subtree is rebuilt from code. Nudging a generated
+        /// wall will not survive. Put your own work at the top level or under "_Handmade".
+        /// </summary>
         static void BuildTrainHubScene(ItemRegistry registry)
         {
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var path = $"{ScenesFolder}/{SceneCatalog.TrainHub}.unity";
+            var scene = System.IO.File.Exists(path)
+                ? EditorSceneManager.OpenScene(path, OpenSceneMode.Single)
+                : EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-            var floorMaterial = GrayboxKit.SolidMaterial("GB_TrainFloor", new Color(0.30f, 0.24f, 0.20f));
-            var wallMaterial = GrayboxKit.SolidMaterial("GB_TrainWall", new Color(0.42f, 0.33f, 0.26f));
-            var trimMaterial = GrayboxKit.SolidMaterial("GB_TrainTrim", new Color(0.62f, 0.48f, 0.30f), 0.25f);
+            var generated = new HashSet<string>(DepotBlockout.GeneratedRoots);
+            var removed = 0;
+            var kept = 0;
 
-            var root = new GameObject("TrainCar");
-
-            // A single car: 3.4 m wide, 12 m long, 2.8 m tall.
-            GrayboxKit.Box("Floor", root.transform, new Vector3(0f, -0.1f, 0f), new Vector3(3.2f, 0.2f, 12f), floorMaterial);
-            GrayboxKit.Box("Ceiling", root.transform, new Vector3(0f, 2.7f, 0f), new Vector3(3.2f, 0.2f, 12f), wallMaterial);
-            GrayboxKit.Box("Wall_West", root.transform, new Vector3(-1.7f, 1.3f, 0f), new Vector3(0.2f, 2.8f, 12f), wallMaterial);
-            GrayboxKit.Box("Wall_East", root.transform, new Vector3(1.7f, 1.3f, 0f), new Vector3(0.2f, 2.8f, 12f), wallMaterial);
-            GrayboxKit.Box("Wall_North", root.transform, new Vector3(0f, 1.3f, 6.1f), new Vector3(3.6f, 2.8f, 0.2f), wallMaterial);
-            GrayboxKit.Box("Wall_South", root.transform, new Vector3(0f, 1.3f, -6.1f), new Vector3(3.6f, 2.8f, 0.2f), wallMaterial);
-
-            GrayboxKit.Box("Table", root.transform, new Vector3(0f, 0.75f, 2.5f), new Vector3(1.2f, 0.1f, 2f), trimMaterial);
-            GrayboxKit.Box("Bench_West", root.transform, new Vector3(-1.2f, 0.45f, -2f), new Vector3(0.6f, 0.1f, 3f), trimMaterial);
-            GrayboxKit.Box("Bench_East", root.transform, new Vector3(1.2f, 0.45f, -2f), new Vector3(0.6f, 0.1f, 3f), trimMaterial);
-            GrayboxKit.Box("Lockers", root.transform, new Vector3(-1.3f, 1f, 4.8f), new Vector3(0.6f, 2f, 1.6f), trimMaterial);
-
-            // Warm interior light, deliberately in contrast with the cold forest.
-            var lightObject = GrayboxKit.Empty("Interior Light", root.transform, new Vector3(0f, 2.4f, 0f));
-            var light = lightObject.AddComponent<Light>();
-            light.type = LightType.Point;
-            light.color = new Color(1f, 0.82f, 0.6f);
-            light.intensity = 3.2f;
-            light.range = 16f;
-            light.shadows = LightShadows.Soft;
-
-            var spawnRoot = GrayboxKit.Empty("SpawnPoints", null, Vector3.zero);
-            var spawnPositions = new[]
+            foreach (var root in scene.GetRootGameObjects())
             {
-                new Vector3(-0.7f, 0f, -3.5f),
-                new Vector3(0.7f, 0f, -3.5f),
-                new Vector3(-0.7f, 0f, -4.6f),
-                new Vector3(0.7f, 0f, -4.6f)
-            };
-
-            for (var i = 0; i < spawnPositions.Length; i++)
-            {
-                var point = GrayboxKit.Empty($"TrainSpawn_{i}", spawnRoot.transform, spawnPositions[i]);
-                var spawn = point.AddComponent<PlayerSpawnPoint>();
-                Wire(spawn, ("context", (int)SpawnContext.Train));
+                if (generated.Contains(root.name))
+                {
+                    Object.DestroyImmediate(root);
+                    removed++;
+                }
+                else
+                {
+                    kept++;
+                }
             }
 
-            var leverMaterial = GrayboxKit.SolidMaterial("GB_Lever", new Color(0.85f, 0.3f, 0.25f));
-            var lever = GrayboxKit.Box("DepartureLever", null, new Vector3(0f, 1.2f, 5.6f),
-                new Vector3(0.25f, 0.5f, 0.25f), leverMaterial);
-            lever.AddComponent<NetworkObject>();
-            var leverComponent = lever.AddComponent<DepartureLever>();
-            Wire(leverComponent, ("prompt", "Depart on expedition"), ("interactionRange", 2.5f));
+            DepotBlockout.Build(registry);
+            EnsureHandmadeRoot(scene);
 
-            // One door, to prove interaction replicates to every client.
-            var doorRoot = GrayboxKit.Empty("Door", null, new Vector3(-1.4f, 0f, 0f));
-            doorRoot.AddComponent<NetworkObject>();
-            var doorComponent = doorRoot.AddComponent<SimpleDoor>();
-            var hinge = GrayboxKit.Empty("Hinge", doorRoot.transform, Vector3.zero);
-            GrayboxKit.Box("Panel", hinge.transform, new Vector3(0f, 1f, 0.45f),
-                new Vector3(0.1f, 2f, 0.9f), trimMaterial);
-            Wire(doorComponent, ("hinge", hinge.transform), ("prompt", "door"), ("interactionRange", 2.5f));
+            if (kept > 0)
+            {
+                Debug.Log($"<b>Transity</b>: depot rebuilt. Replaced {removed} generated root(s), " +
+                          $"kept {kept} of your own.");
+            }
 
-            // Loose equipment, to test pickup.
-            PlaceWorldItem(registry, "Flashlight", new Vector3(0f, 0.9f, 2.5f));
-            PlaceWorldItem(registry, "Medical Kit", new Vector3(0.4f, 0.9f, 2.9f));
-
-            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-            RenderSettings.ambientLight = new Color(0.22f, 0.19f, 0.16f);
-            RenderSettings.fog = false;
-
-            EditorSceneManager.MarkSceneDirty(scene);
-            EditorSceneManager.SaveScene(scene, $"{ScenesFolder}/{SceneCatalog.TrainHub}.unity");
+            SaveSceneWithNetworkIds(scene, SceneCatalog.TrainHub);
         }
 
-        static void BuildForestScene()
+        /// <summary>
+        /// Creates the parking spot for hand-made content if it does not exist yet, so there
+        /// is an obvious safe place to put things.
+        /// </summary>
+        static void EnsureHandmadeRoot(UnityEngine.SceneManagement.Scene scene)
+        {
+            // Scene roots rather than GameObject.Find, which ignores inactive objects and
+            // would happily create a second one.
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                if (root.name == DepotBlockout.HandmadeRoot)
+                {
+                    return;
+                }
+            }
+
+            var handmade = new GameObject(DepotBlockout.HandmadeRoot);
+            handmade.transform.SetSiblingIndex(0);
+        }
+
+        static void BuildForestScene(ItemRegistry registry)
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -553,10 +1249,18 @@ namespace Transity.EditorTools
 
                 var height = 5f + (float)random.NextDouble() * 6f;
                 var tree = GrayboxKit.Empty($"Tree_{i}", trees.transform, new Vector3(x, 0f, z));
+
+                // Trunks keep their colliders: they block movement, break line of sight and
+                // are what the NavMesh bake carves around.
                 GrayboxKit.Cylinder("Trunk", tree.transform, new Vector3(0f, height * 0.5f, 0f),
                     new Vector3(0.5f, height * 0.5f, 0.5f), trunkMaterial);
-                GrayboxKit.Box("Canopy", tree.transform, new Vector3(0f, height + 1.2f, 0f),
+
+                // Canopies do not. Six metres up they block nothing a player can reach, and
+                // leaving them solid gives the bake a flat roof to call walkable -- which is
+                // how creatures end up pathing through the treetops.
+                var canopy = GrayboxKit.Box("Canopy", tree.transform, new Vector3(0f, height + 1.2f, 0f),
                     new Vector3(3.4f, 3.2f, 3.4f), canopyMaterial);
+                GrayboxKit.Decorative(canopy);
             }
 
             var rocks = GrayboxKit.Empty("Rocks", null, Vector3.zero);
@@ -577,16 +1281,21 @@ namespace Transity.EditorTools
                 var point = GrayboxKit.Empty($"ExpeditionSpawn_{i}", spawnRoot.transform, position);
                 point.transform.rotation = Quaternion.LookRotation(-position.normalized, Vector3.up);
                 var spawn = point.AddComponent<PlayerSpawnPoint>();
-                Wire(spawn, ("context", (int)SpawnContext.Expedition));
+                GrayboxKit.Wire(spawn, ("context", (int)SpawnContext.Expedition));
             }
 
             // Stand-in for the waiting train.
             var extractionMaterial = GrayboxKit.SolidMaterial("GB_Extraction", new Color(0.9f, 0.75f, 0.35f));
             var extraction = GrayboxKit.Box("ExtractionPoint", null, new Vector3(0f, 1f, 8f),
                 new Vector3(2f, 2f, 2f), extractionMaterial);
+            extraction.layer = InteractableLayer;
             extraction.AddComponent<NetworkObject>();
             var extractionComponent = extraction.AddComponent<ExtractionPoint>();
-            Wire(extractionComponent, ("prompt", "Board the train"), ("interactionRange", 3.5f));
+            GrayboxKit.Wire(extractionComponent, ("prompt", "Board the train"), ("interactionRange", 3.5f));
+
+            BuildSupplyCache(registry);
+            BuildCreatureRegions(random);
+            BuildForestDirector();
 
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(0.16f, 0.19f, 0.22f);
@@ -595,21 +1304,182 @@ namespace Transity.EditorTools
             RenderSettings.fogColor = new Color(0.34f, 0.40f, 0.44f);
             RenderSettings.fogDensity = 0.022f;
 
-            EditorSceneManager.MarkSceneDirty(scene);
-            EditorSceneManager.SaveScene(scene, $"{ScenesFolder}/{SceneCatalog.Forest}.unity");
+            // Save first: the NavMesh bake writes an asset beside the scene file, so the
+            // scene has to exist on disk before it runs.
+            SaveSceneWithNetworkIds(scene, SceneCatalog.Forest);
+            BakeForestNavMesh(scene);
         }
 
-        static void PlaceWorldItem(ItemRegistry registry, string displayName, Vector3 position)
+        /// <summary>
+        /// A crate of gear beside the landing zone.
+        ///
+        /// Deliberately generous and deliberately temporary. Arriving in the forest with an
+        /// empty pack means the only thing to test is walking, so this exists so a hunt can
+        /// be played the moment the scene loads. When the depot economy is the real way to
+        /// equip a crew, delete the call -- everything here is bought at the quartermaster.
+        /// </summary>
+        static void BuildSupplyCache(ItemRegistry registry)
         {
-            var definition = registry.Items.FirstOrDefault(i => i != null && i.DisplayName == displayName);
-            if (definition == null || definition.WorldPrefab == null)
+            var root = GrayboxKit.Empty("SupplyCache", null, new Vector3(0f, 0f, 5f));
+
+            var crateMaterial = GrayboxKit.SolidMaterial("GB_Cache", new Color(0.35f, 0.32f, 0.22f));
+            var pallet = GrayboxKit.Box("Pallet", root.transform, new Vector3(0f, 0.1f, 0f),
+                new Vector3(3.4f, 0.2f, 2.2f), crateMaterial);
+            GrayboxKit.MarkStatic(pallet);
+
+            // One of everything a hunt needs: something to shoot with, something to shoot,
+            // something to heal with, something to place, and something to see by.
+            var wanted = new[]
             {
-                Debug.LogWarning($"Could not place '{displayName}': no definition or world prefab.");
+                "Compact Carbine", "Pump Shotgun", "9mm Field Pistol", "Hunter Crossbow",
+                "Tranquilizer Pistol", "Ammo", "Ammo",
+                "Medical Kit", "Trauma Kit", "Adrenaline Injector",
+                "Bear Trap", "Motion Sensor Alarm", "Creature Bait Canister",
+                "Basic Flashlight", "Heavy Flashlight", "Glow Stick", "Glow Stick",
+                "Night-Vision Goggles", "Thermal Monocular", "Hunter Body Camera"
+            };
+
+            var placed = 0;
+            var missing = new List<string>();
+
+            for (var i = 0; i < wanted.Length; i++)
+            {
+                var definition = registry.Items.FirstOrDefault(
+                    item => item != null && item.DisplayName == wanted[i]);
+
+                if (definition == null || definition.WorldPrefab == null)
+                {
+                    missing.Add(wanted[i]);
+                    continue;
+                }
+
+                // Two rows along the pallet, laid out rather than piled, so every item is
+                // separately visible and separately pickable.
+                var column = placed / 2;
+                var rowSide = placed % 2 == 0 ? -0.45f : 0.45f;
+                var instance = (GameObject)PrefabUtility.InstantiatePrefab(definition.WorldPrefab, root.transform);
+                instance.transform.localPosition = new Vector3(-1.45f + column * 0.32f, 0.28f, rowSide);
+                instance.transform.localRotation = Quaternion.Euler(0f, placed * 37f, 0f);
+
+                foreach (var transform in instance.GetComponentsInChildren<Transform>(true))
+                {
+                    transform.gameObject.layer = InteractableLayer;
+                }
+
+                placed++;
+            }
+
+            if (missing.Count > 0)
+            {
+                Debug.LogWarning("Supply cache could not place: " + string.Join(", ", missing) +
+                                 ". Check the display names against the item registry.");
+            }
+
+            Debug.Log($"<b>Transity</b>: supply cache placed with {placed} item(s).");
+        }
+
+        /// <summary>
+        /// Places the patches creatures start in, spread around the ring beyond the
+        /// landing area so nothing spawns where the crew can see it arrive.
+        /// </summary>
+        static void BuildCreatureRegions(System.Random random)
+        {
+            var root = GrayboxKit.Empty("CreatureRegions", null, Vector3.zero);
+
+            // Spread from close to far. The director refuses any region nearer than its
+            // minimum, so on a real expedition the near ones are simply never picked --
+            // they exist for the sandbox, where walking 45 m before the test begins is
+            // just dead time.
+            for (var i = 0; i < 8; i++)
+            {
+                var angle = (i / 8f) * Mathf.PI * 2f + (float)random.NextDouble() * 0.4f;
+                var distance = 24f + (i / 8f) * 42f + (float)random.NextDouble() * 6f;
+                var position = new Vector3(Mathf.Cos(angle) * distance, 0f, Mathf.Sin(angle) * distance);
+
+                var region = GrayboxKit.Empty($"Region_{i}", root.transform, position);
+                var component = region.AddComponent<CreatureSpawnRegion>();
+                GrayboxKit.Wire(component, ("radius", 16f));
+            }
+        }
+
+        static void BuildForestDirector()
+        {
+            var go = new GameObject("ForestDirector");
+            go.AddComponent<NetworkObject>();
+
+            var surface = go.AddComponent<NavMeshSurface>();
+            surface.collectObjects = CollectObjects.All;
+            surface.layerMask = 1;
+            surface.useGeometry = UnityEngine.AI.NavMeshCollectGeometry.PhysicsColliders;
+
+            var director = go.AddComponent<ForestDirector>();
+            GrayboxKit.Wire(director,
+                ("navMesh", surface),
+                ("minimumSpawnDistanceFromCrew", 45f),
+                ("wipeGraceSeconds", 4f));
+        }
+
+        /// <summary>
+        /// Bakes the forest NavMesh. Creatures are NavMeshAgents, so without this every
+        /// one of them spawns and stands still -- the single most likely way for this
+        /// whole feature to look broken.
+        /// </summary>
+        static void BakeForestNavMesh(UnityEngine.SceneManagement.Scene scene)
+        {
+            NavMeshSurface surface = null;
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                surface = root.GetComponentInChildren<NavMeshSurface>(true);
+                if (surface != null)
+                {
+                    break;
+                }
+            }
+
+            if (surface == null)
+            {
+                Debug.LogWarning("No NavMeshSurface in the forest; creatures will bake one at runtime.");
                 return;
             }
 
-            var instance = (GameObject)PrefabUtility.InstantiatePrefab(definition.WorldPrefab);
-            instance.transform.position = position;
+            // Agents are up to 0.8 m across and 2.6 m tall (the Stilt Stalker), so the bake
+            // has to clear both or the tall one cannot path anywhere the others can.
+            var settings = surface.GetBuildSettings();
+            settings.agentRadius = 0.5f;
+            settings.agentHeight = 2.8f;
+            settings.agentSlope = 45f;
+            settings.agentClimb = 0.5f;
+
+            surface.agentTypeID = settings.agentTypeID;
+            surface.overrideVoxelSize = true;
+            surface.voxelSize = 0.2f;
+
+            surface.BuildNavMesh();
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene, $"{ScenesFolder}/{SceneCatalog.Forest}.unity");
+
+            Debug.Log("<b>Transity</b>: forest NavMesh baked.");
+        }
+
+        /// <summary>
+        /// Saves a generated scene twice on purpose. NetworkObject can only compute its
+        /// GlobalObjectIdHash once the object exists in a saved scene, so the first save
+        /// gives it an identity, the regeneration pass fills the hash in, and the second
+        /// save persists it. Skip this and nothing in the scene ever spawns.
+        /// </summary>
+        static void SaveSceneWithNetworkIds(UnityEngine.SceneManagement.Scene scene, string sceneName)
+        {
+            var path = $"{ScenesFolder}/{sceneName}.unity";
+
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene, path);
+
+            var count = NetworkIdFixup.RefreshScene(scene);
+            if (count > 0)
+            {
+                EditorSceneManager.MarkSceneDirty(scene);
+                EditorSceneManager.SaveScene(scene, path);
+            }
         }
 
         static void ApplyBuildSettings()
@@ -635,7 +1505,7 @@ namespace Transity.EditorTools
             if (persistent)
             {
                 var root = go.AddComponent<PersistentRoot>();
-                Wire(root, ("uniqueKey", canvasName));
+                GrayboxKit.Wire(root, ("uniqueKey", canvasName));
             }
 
             return canvas;
@@ -725,53 +1595,5 @@ namespace Transity.EditorTools
             rect.anchoredPosition = anchoredPosition;
         }
 
-        /// <summary>
-        /// Assigns private [SerializeField] fields by name, so components can stay properly
-        /// encapsulated instead of exposing setters just for this generator.
-        /// </summary>
-        static void Wire(Object target, params (string field, object value)[] assignments)
-        {
-            var so = new SerializedObject(target);
-
-            foreach (var (field, value) in assignments)
-            {
-                var property = so.FindProperty(field);
-                if (property == null)
-                {
-                    Debug.LogError($"{target.GetType().Name} has no serialized field '{field}'.");
-                    continue;
-                }
-
-                switch (value)
-                {
-                    case null:
-                        property.objectReferenceValue = null;
-                        break;
-                    case string s:
-                        property.stringValue = s;
-                        break;
-                    case int i when property.propertyType == SerializedPropertyType.Enum:
-                        property.enumValueIndex = i;
-                        break;
-                    case int i:
-                        property.intValue = i;
-                        break;
-                    case float f:
-                        property.floatValue = f;
-                        break;
-                    case bool b:
-                        property.boolValue = b;
-                        break;
-                    case Object o:
-                        property.objectReferenceValue = o;
-                        break;
-                    default:
-                        Debug.LogError($"Unsupported value type for '{field}': {value.GetType().Name}");
-                        break;
-                }
-            }
-
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
     }
 }

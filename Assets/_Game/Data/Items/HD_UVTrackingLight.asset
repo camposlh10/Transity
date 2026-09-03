@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff405dbd86027046b4e3817039f57f6, type: 3}
+  m_Name: HD_UVTrackingLight
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Inventory.ItemDefinition
+  itemId: item.hd.uvtrackinglight
+  displayName: UV Tracking Light
+  description: reveals biological traces; poor general illumination
+  icon: {fileID: 21300000, guid: 3f9b1015ad5d0844bba3bfe064a1fdc1, type: 3}
+  category: 6
+  slot: 1
+  worldPrefab: {fileID: 9110611711427535092, guid: e8648eb7b642002479fd16fd39efcdf1, type: 3}
+  heldModel: {fileID: 919132149155446097, guid: 36bb3abbf16857449a4a9df33ba9bbe7, type: 3}
+  behaviour: {fileID: 11400000, guid: 2acc613ba6c74dc4c8e64488b9384c1e, type: 2}
+  price: 210
+  stashLimit: 20
+  atRiskOnExpedition: 1

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff405dbd86027046b4e3817039f57f6, type: 3}
+  m_Name: HD_FieldPistol
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Inventory.ItemDefinition
+  itemId: item.hd.fieldpistol
+  displayName: 9mm Field Pistol
+  description: reliable and inexpensive; low creature stopping power
+  icon: {fileID: 21300000, guid: 234e09723ff73b04aaa2bffebbc438a1, type: 3}
+  category: 5
+  slot: 6
+  worldPrefab: {fileID: 4219126548971793873, guid: aa40f9aff79c70f4fbd3085628dcf958, type: 3}
+  heldModel: {fileID: 919132149155446097, guid: 305a29f144ad4eb42aaa62b050c633f8, type: 3}
+  behaviour: {fileID: 11400000, guid: 2c8e1f39f5062fe49a23b825fde54f0f, type: 2}
+  price: 250
+  stashLimit: 5
+  atRiskOnExpedition: 1

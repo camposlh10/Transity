@@ -57,6 +57,16 @@ namespace Transity.Networking
                 networkObject.Spawn(destroyWithScene: false);
             }
 
+            if (GameBootstrap.Mode == StartupMode.ForestSandbox)
+            {
+                // Skip the depot entirely. BeginExpedition falls back to the first contract
+                // when none has been chosen, which is the tier 1 hound cull -- the right
+                // thing to be dropped into unprepared.
+                GameLog.Net("Server started in sandbox mode; departing straight for the forest.");
+                MissionDirector.Instance.BeginExpedition();
+                return;
+            }
+
             GameLog.Net("Server started; loading the train hub.");
             MissionDirector.Instance.LoadTrainHub();
         }

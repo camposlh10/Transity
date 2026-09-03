@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff405dbd86027046b4e3817039f57f6, type: 3}
+  m_Name: HD_RescueHatchet
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Inventory.ItemDefinition
+  itemId: item.hd.rescuehatchet
+  displayName: Rescue Hatchet
+  description: requires no ammunition; extremely dangerous against creatures
+  icon: {fileID: 21300000, guid: 82056f6ec66016b479ecaa438fc45c4e, type: 3}
+  category: 0
+  slot: 10
+  worldPrefab: {fileID: 4678435144849371826, guid: be27948bb7141e345b705e4923d76a80, type: 3}
+  heldModel: {fileID: 919132149155446097, guid: 38952ad4477654142910714d2e6f1012, type: 3}
+  behaviour: {fileID: 11400000, guid: 90235b7a6eab6cb4799ba06fe38e51c2, type: 2}
+  price: 70
+  stashLimit: 10
+  atRiskOnExpedition: 1

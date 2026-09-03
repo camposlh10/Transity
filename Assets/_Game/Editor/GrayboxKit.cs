@@ -75,6 +75,94 @@ namespace Transity.EditorTools
             return go;
         }
 
+        /// <summary>Snaps to the construction grid: 1 m for architecture, 0.25 m for props.</summary>
+        public static Vector3 Snap(Vector3 position, float grid)
+        {
+            return new Vector3(
+                Mathf.Round(position.x / grid) * grid,
+                Mathf.Round(position.y / grid) * grid,
+                Mathf.Round(position.z / grid) * grid);
+        }
+
+        /// <summary>
+        /// Flags architecture for batching, occlusion and baked GI. The room targets mostly
+        /// baked lighting and a few hundred draw calls, and neither happens without this.
+        /// </summary>
+        public static void MarkStatic(GameObject go)
+        {
+            const StaticEditorFlags flags = StaticEditorFlags.ContributeGI
+                                            | StaticEditorFlags.BatchingStatic
+                                            | StaticEditorFlags.OccluderStatic
+                                            | StaticEditorFlags.OccludeeStatic
+                                            | StaticEditorFlags.ReflectionProbeStatic;
+
+            foreach (var transform in go.GetComponentsInChildren<Transform>(true))
+            {
+                GameObjectUtility.SetStaticEditorFlags(transform.gameObject, flags);
+            }
+        }
+
+        /// <summary>Strips colliders. Small decorative objects should not have collision.</summary>
+        public static void Decorative(GameObject go)
+        {
+            foreach (var collider in go.GetComponentsInChildren<Collider>(true))
+            {
+                Object.DestroyImmediate(collider);
+            }
+        }
+
+        /// <summary>
+        /// Assigns private [SerializeField] fields by name, so components stay encapsulated
+        /// instead of exposing setters purely for generated content.
+        /// </summary>
+        public static void Wire(Object target, params (string field, object value)[] assignments)
+        {
+            var so = new SerializedObject(target);
+
+            foreach (var (field, value) in assignments)
+            {
+                var property = so.FindProperty(field);
+                if (property == null)
+                {
+                    Debug.LogError($"{target.GetType().Name} has no serialized field '{field}'.");
+                    continue;
+                }
+
+                switch (value)
+                {
+                    case null:
+                        property.objectReferenceValue = null;
+                        break;
+                    case string s:
+                        property.stringValue = s;
+                        break;
+                    case int i when property.propertyType == SerializedPropertyType.Enum:
+                        property.enumValueIndex = i;
+                        break;
+                    case int i:
+                        property.intValue = i;
+                        break;
+                    case float f:
+                        property.floatValue = f;
+                        break;
+                    case bool b:
+                        property.boolValue = b;
+                        break;
+                    case Vector2 v:
+                        property.vector2Value = v;
+                        break;
+                    case Object o:
+                        property.objectReferenceValue = o;
+                        break;
+                    default:
+                        Debug.LogError($"Unsupported value type for '{field}': {value.GetType().Name}");
+                        break;
+                }
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         public static void EnsureFolder(string assetFolder)
         {
             if (AssetDatabase.IsValidFolder(assetFolder))

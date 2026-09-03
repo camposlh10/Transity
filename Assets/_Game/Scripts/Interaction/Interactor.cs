@@ -47,10 +47,21 @@ namespace Transity.Interaction
 
             ScanForTarget();
 
-            if (input.InteractPressed && m_Current is NetworkInteractable networkInteractable)
+            if (!input.InteractPressed || m_Current is not NetworkInteractable networkInteractable)
             {
-                RequestInteractRpc(new NetworkBehaviourReference(networkInteractable));
+                return;
             }
+
+            // An in-scene NetworkObject that never spawned (a stale scene built before the
+            // GlobalObjectIdHash fix) would throw when referenced. Report it instead.
+            if (!networkInteractable.IsSpawned)
+            {
+                GameLog.Error($"'{networkInteractable.name}' is not spawned, so it cannot be used. " +
+                              "Rebuild the scaffold to regenerate its network id.");
+                return;
+            }
+
+            RequestInteractRpc(new NetworkBehaviourReference(networkInteractable));
         }
 
         void ScanForTarget()
@@ -105,22 +116,41 @@ namespace Transity.Interaction
         }
 
         /// <summary>
+        /// Sent by the server to the one client that used a station. Opening a screen is a
+        /// view action, so it runs on the owner only -- but it still had to pass the same
+        /// reach and line-of-sight checks as any other interaction to get here.
+        /// </summary>
+        [Rpc(SendTo.Owner)]
+        public void OpenStationScreenRpc(NetworkBehaviourReference terminalRef)
+        {
+            if (!terminalRef.TryGet(out Transity.Train.StationTerminal terminal) || terminal == null)
+            {
+                return;
+            }
+
+            if (TryGetComponent<Transity.Player.StationFocusController>(out var focus))
+            {
+                focus.Open(terminal);
+            }
+        }
+
+        /// <summary>
         /// Server-side validation. Distance is measured from the player root rather than
         /// the camera so a client cannot extend its reach by reporting a head position.
         /// </summary>
         bool IsWithinServerReach(IInteractable target)
         {
+            var aimPoint = AimPointOf(target);
             var allowed = Mathf.Max(target.InteractionRange, maxRange) * serverRangeTolerance;
-            var toTarget = target.Transform.position - transform.position;
+            var toTarget = aimPoint - transform.position;
 
             if (toTarget.sqrMagnitude > allowed * allowed)
             {
                 return false;
             }
 
-            // Cheap line of sight check: block interactions through solid geometry.
             var eye = transform.position + Vector3.up * 1.5f;
-            var direction = target.Transform.position - eye;
+            var direction = aimPoint - eye;
             var distance = direction.magnitude;
 
             if (distance < 0.01f)
@@ -128,7 +158,11 @@ namespace Transity.Interaction
                 return true;
             }
 
-            if (Physics.Raycast(eye, direction / distance, out var hit, distance, occlusionMask,
+            // Stop just short of the target. Ending the ray exactly on its surface lets
+            // whatever it is standing on -- usually the floor slab -- count as an occluder.
+            var checkDistance = Mathf.Max(distance - 0.2f, 0.01f);
+
+            if (Physics.Raycast(eye, direction / distance, out var hit, checkDistance, occlusionMask,
                     QueryTriggerInteraction.Ignore))
             {
                 var blockedBy = hit.collider.GetComponentInParent<IInteractable>();
@@ -136,6 +170,24 @@ namespace Transity.Interaction
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// The point on an interactable worth aiming at: the centre of its collider, not its
+        /// transform origin. Kit pieces have bottom-centre origins, so an origin-based check
+        /// measures to a point on the floor and tests line of sight through the floor.
+        /// </summary>
+        static Vector3 AimPointOf(IInteractable target)
+        {
+            var transform = target.Transform;
+
+            if (transform.TryGetComponent<Collider>(out var own))
+            {
+                return own.bounds.center;
+            }
+
+            var child = transform.GetComponentInChildren<Collider>();
+            return child != null ? child.bounds.center : transform.position;
         }
     }
 }

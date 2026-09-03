@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff405dbd86027046b4e3817039f57f6, type: 3}
+  m_Name: HD_NightVisionGoggles
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Inventory.ItemDefinition
+  itemId: item.hd.nightvisiongoggles
+  displayName: Night-Vision Goggles
+  description: darkness visibility; blooms under bright light
+  icon: {fileID: 21300000, guid: 4dd7ed6264551014a95152c50589e8c5, type: 3}
+  category: 7
+  slot: 2
+  worldPrefab: {fileID: 1968175987912297422, guid: e38cbef448985c4498a0dec165deeac3, type: 3}
+  heldModel: {fileID: 919132149155446097, guid: ec9d9363813e4e0499f1301573164b0d, type: 3}
+  behaviour: {fileID: 11400000, guid: 3fdff2e1ea6add048867a79129b66674, type: 2}
+  price: 520
+  stashLimit: 5
+  atRiskOnExpedition: 1

@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2ab00df997b2b44ae75d4e04a9cf08, type: 3}
+  m_Name: Creature_Mossback
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Creatures.CreatureDefinition
+  id: creature.mossback
+  displayName: Mossback
+  fieldNotes: Bear-sized, moss-plated, territorial. Slow to notice you and impossible
+    to shake off once it has. Leaves its patch reluctantly. The plate on its back
+    is the soft spot.
+  temperament: 0
+  shape: 0
+  bodyLength: 2.6
+  bodyHeight: 1.3
+  bodyWidth: 1.15
+  legLength: 0.95
+  color: {r: 0.24, g: 0.3, b: 0.18, a: 1}
+  eyeColor: {r: 1, g: 0.6, b: 0.15, a: 1}
+  weakPointLabel: moss plate
+  weakPointMultiplier: 3
+  maxHealth: 520
+  regenWhileRecovering: 7
+  fleeHealthFraction: 0.28
+  recoveredHealthFraction: 0.7
+  sedationThreshold: 130
+  sedationDecay: 3.5
+  collapseSeconds: 45
+  walkSpeed: 1.4
+  stalkSpeed: 2.2
+  runSpeed: 6.8
+  acceleration: 12
+  turnSpeedDegrees: 160
+  agentRadius: 0.8
+  agentHeight: 2
+  roamRadius: 26
+  sightRange: 28
+  sightAngle: 120
+  hearing: 1.1
+  secondsToNotice: 2.6
+  awarenessDecayPerSecond: 0.06
+  loseInterestSeconds: 18
+  territoryRadius: 38
+  attackRange: 2.7
+  attackDamage: 38
+  attackWindup: 0.65
+  lungeSpeed: 12
+  lungeSeconds: 0.34
+  attackRecovery: 0.8
+  attackCooldown: 1.6
+  bleedChance: 0.6
+  stalkDistance: 14
+  boldness: 0.5
+  skittishness: 0.05
+  packSize: 1
+  flankRadius: 7
+  packCohesionRadius: 14
+  bountyKill: 500
+  bountyCapture: 1100
+  voice: 12
+  alarmCall: 13
+  voicePitch: 0.75
+  footstepVolume: 1

@@ -96,8 +96,12 @@ namespace Transity.UI
                     break;
                 case GameBootstrap.OnlineState.Unavailable:
                     SetStatus($"Online unavailable: {GameBootstrap.OnlineFailureReason}\n" +
-                              "Link a Unity Cloud project in Project Settings > Services.");
-                    SetButtonsInteractable(false);
+                              "Link a Unity Cloud project in Project Settings > Services. " +
+                              "You can still try; the attempt will report why it failed.");
+                    // Deliberately left clickable. Greying these out turns any online
+                    // hiccup into a dead menu with no way forward, and offline-host mode
+                    // reports Unavailable by design.
+                    SetButtonsInteractable(true);
                     break;
             }
         }
@@ -124,7 +128,7 @@ namespace Transity.UI
 
             SetButtonsInteractable(false);
             await SessionManager.Instance.HostAsync(null);
-            SetButtonsInteractable(GameBootstrap.Online == GameBootstrap.OnlineState.Ready);
+            SetButtonsInteractable(true);
         }
 
         async void OnJoinClicked()
@@ -136,7 +140,7 @@ namespace Transity.UI
 
             SetButtonsInteractable(false);
             await SessionManager.Instance.JoinByCodeAsync(codeField != null ? codeField.text : string.Empty);
-            SetButtonsInteractable(GameBootstrap.Online == GameBootstrap.OnlineState.Ready);
+            SetButtonsInteractable(true);
         }
 
         static void OnQuitClicked()

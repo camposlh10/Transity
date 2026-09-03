@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a56fea3a9641bd49bddf2eb897080c0, type: 3}
+  m_Name: Contract_SomethingInTheTrees
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Missions.ContractDefinition
+  id: contract.stalker
+  title: Something in the Trees
+  briefing: Two survey teams came back short a man each. Neither saw what took him.
+    Keep your lights up and your backs to something solid.
+  kind: 0
+  tier: 2
+  creature: {fileID: 11400000, guid: ecd082c3741b5a94494147fb2f3ad19d, type: 2}
+  count: 1
+  spawnAsPack: 0
+  secondaryCreature: {fileID: 0}
+  secondaryCount: 0
+  secondaryAsPack: 1
+  rewardMultiplier: 1.1
+  completionBonus: 200
+  betrayalChance: 0.45
+  betrayalBonus: 800

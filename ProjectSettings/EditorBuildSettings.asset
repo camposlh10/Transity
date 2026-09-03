@@ -6,8 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/_Game/Scenes/Boot.unity
+    guid: f7c19a61cc7e40241949e06d91426eae
+  - enabled: 1
+    path: Assets/_Game/Scenes/MainMenu.unity
+    guid: 5c2c01c33d80de442a0330529f57d3e4
+  - enabled: 1
+    path: Assets/_Game/Scenes/TrainHub.unity
+    guid: 61ed41e7a7a704b49a5c2bb4210d65d0
+  - enabled: 1
+    path: Assets/_Game/Scenes/Forest.unity
+    guid: 54be53be4c0a5f04687b204739f1fb62
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

@@ -13,6 +13,12 @@ namespace Transity.Player
     /// Marker placed in the Train and Forest scenes. Registers itself so the server can
     /// hand out distinct positions without holding scene references across a load.
     /// </summary>
+    /// <remarks>
+    /// ExecuteAlways so markers register in the editor as well as at runtime. Level layout
+    /// tooling and the blockout generator both place these outside play mode, and a marker
+    /// that only exists once you press Play cannot be validated.
+    /// </remarks>
+    [ExecuteAlways]
     public sealed class PlayerSpawnPoint : MonoBehaviour
     {
         [SerializeField] SpawnContext context = SpawnContext.Train;

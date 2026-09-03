@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 938dd83ee29e7804183f1152c13da5ea, type: 3}
+  m_Name: CreatureRegistry
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Creatures.CreatureRegistry
+  entries:
+  - definition: {fileID: 11400000, guid: e052c8d826f23ca4e997b23c5452f426, type: 2}
+    prefab: {fileID: 8726472000787023554, guid: fd3a59d1b62083e49ac3f8c499276f01, type: 3}
+  - definition: {fileID: 11400000, guid: ecd082c3741b5a94494147fb2f3ad19d, type: 2}
+    prefab: {fileID: 2177823724441552077, guid: 4220a690d0c9287489c6ea28b0b32155, type: 3}
+  - definition: {fileID: 11400000, guid: 5fa412edd09ec634ab5238544999b64e, type: 2}
+    prefab: {fileID: 8153508737794455973, guid: a4aa44912bf441d45955774d60878d4e, type: 3}

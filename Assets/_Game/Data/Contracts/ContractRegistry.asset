@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afa582b272c02ba49b2d68274a490d3b, type: 3}
+  m_Name: ContractRegistry
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Missions.ContractRegistry
+  contracts:
+  - {fileID: 11400000, guid: b1e6d6b9aca7fd847a278a614930628e, type: 2}
+  - {fileID: 11400000, guid: cae946feddea6af4e801dd962e6184f9, type: 2}
+  - {fileID: 11400000, guid: 65ad9838f1c760645bd3d9cffb7337af, type: 2}
+  - {fileID: 11400000, guid: 55c3dc797e3d6b741b6492443bfd7e93, type: 2}

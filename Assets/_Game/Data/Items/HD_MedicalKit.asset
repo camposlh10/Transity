@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff405dbd86027046b4e3817039f57f6, type: 3}
+  m_Name: HD_MedicalKit
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Inventory.ItemDefinition
+  itemId: item.hd.medicalkit
+  displayName: Medical Kit
+  description: restores health and stops bleeding; slow use animation
+  icon: {fileID: 21300000, guid: b508b87cd53fa0e4b86327e07d4dc0fa, type: 3}
+  category: 1
+  slot: 4
+  worldPrefab: {fileID: 3344236292049724547, guid: 9cf907d8f3a6e184ab8c150e8c292630, type: 3}
+  heldModel: {fileID: 919132149155446097, guid: 3a6738579a382254d90dfd924454bb32, type: 3}
+  behaviour: {fileID: 11400000, guid: 6e5d3f5cf4ae07c4e9146ba96d5f810a, type: 2}
+  price: 120
+  stashLimit: 20
+  atRiskOnExpedition: 1

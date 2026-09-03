@@ -1,0 +1,2839 @@
+[
+  {
+    "pascal_name": "BasicFlashlight",
+    "asset_key": "basic_flashlight",
+    "display_name": "Basic Flashlight",
+    "slot": "flashlight",
+    "tradeoff": "shorter beam; reliable and inexpensive",
+    "ok": true,
+    "dimensions_m": [
+      0.055,
+      0.18,
+      0.055
+    ],
+    "collider": "one simplified CapsuleCollider",
+    "pivot": "right-hand grip center",
+    "emissive_required": true,
+    "texture_resolution": 1024,
+    "triangles": 4292,
+    "measured_size": [
+      0.077,
+      0.2124,
+      0.071
+    ],
+    "measured_min": [
+      -0.035,
+      -0.1174,
+      -0.035
+    ],
+    "parts": 12,
+    "materials": [
+      "HD_MAT_BASIC_FLASHLIGHT_CHARCOAL_BODY",
+      "HD_MAT_BASIC_FLASHLIGHT_GLASS_INDICATOR",
+      "HD_MAT_BASIC_FLASHLIGHT_OLIVE_DETAIL",
+      "HD_MAT_BASIC_FLASHLIGHT_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.055,
+      0.18,
+      0.055
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_BasicFlashlight.fbx",
+    "fbx_bytes": 123660,
+    "atlas": "HD_BasicFlashlight_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_BASIC_FLASHLIGHT_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_BASIC_FLASHLIGHT_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_BASIC_FLASHLIGHT_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_BASIC_FLASHLIGHT_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_BASIC_FLASHLIGHT_GLASS_INDICATOR"
+    ],
+    "atlas_group": "lighting_vision",
+    "secondary_tags": [
+      "handheld",
+      "lighting",
+      "insured-starter"
+    ]
+  },
+  {
+    "pascal_name": "HeavyFlashlight",
+    "asset_key": "heavy_flashlight",
+    "display_name": "Heavy Flashlight",
+    "slot": "flashlight",
+    "tradeoff": "strong beam; heavier and faster battery drain",
+    "ok": true,
+    "dimensions_m": [
+      0.09,
+      0.32,
+      0.1
+    ],
+    "collider": "one simplified CapsuleCollider",
+    "pivot": "right-hand grip center",
+    "emissive_required": true,
+    "texture_resolution": 1024,
+    "triangles": 4100,
+    "measured_size": [
+      0.1048,
+      0.288,
+      0.1361
+    ],
+    "measured_min": [
+      -0.0524,
+      -0.131,
+      -0.0524
+    ],
+    "parts": 13,
+    "materials": [
+      "HD_MAT_HEAVY_FLASHLIGHT_CHARCOAL_BODY",
+      "HD_MAT_HEAVY_FLASHLIGHT_GLASS_INDICATOR",
+      "HD_MAT_HEAVY_FLASHLIGHT_OLIVE_DETAIL",
+      "HD_MAT_HEAVY_FLASHLIGHT_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.09,
+      0.32,
+      0.1
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_HeavyFlashlight.fbx",
+    "fbx_bytes": 125116,
+    "atlas": "HD_HeavyFlashlight_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_HEAVY_FLASHLIGHT_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_FLASHLIGHT_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_FLASHLIGHT_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_FLASHLIGHT_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_HEAVY_FLASHLIGHT_GLASS_INDICATOR"
+    ],
+    "atlas_group": "lighting_vision",
+    "secondary_tags": [
+      "handheld",
+      "lighting",
+      "battery-powered"
+    ]
+  },
+  {
+    "pascal_name": "GlowStick",
+    "asset_key": "glow_stick",
+    "display_name": "Glow Stick",
+    "slot": "utility",
+    "tradeoff": "silent area marker; visible to hunters and creatures",
+    "ok": true,
+    "dimensions_m": [
+      0.025,
+      0.025,
+      0.16
+    ],
+    "collider": "one simplified CapsuleCollider",
+    "pivot": "floor-contact center",
+    "emissive_required": true,
+    "texture_resolution": 1024,
+    "triangles": 852,
+    "measured_size": [
+      0.0331,
+      0.0331,
+      0.1586
+    ],
+    "measured_min": [
+      -0.0166,
+      -0.0166,
+      0.002
+    ],
+    "parts": 4,
+    "materials": [
+      "HD_MAT_GLOW_STICK_GLASS_INDICATOR",
+      "HD_MAT_GLOW_STICK_OLIVE_DETAIL",
+      "HD_MAT_GLOW_STICK_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.025,
+      0.025,
+      0.16
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_GlowStick.fbx",
+    "fbx_bytes": 45180,
+    "atlas": "HD_GlowStick_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_GLOW_STICK_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_GLOW_STICK_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_GLOW_STICK_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_GLOW_STICK_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_GLOW_STICK_GLASS_INDICATOR"
+    ],
+    "atlas_group": "lighting_vision",
+    "secondary_tags": [
+      "consumable",
+      "lighting",
+      "route-marker"
+    ]
+  },
+  {
+    "pascal_name": "NightVisionGoggles",
+    "asset_key": "night_vision_goggles",
+    "display_name": "Night-Vision Goggles",
+    "slot": "vision",
+    "tradeoff": "darkness visibility; blooms under bright light",
+    "ok": true,
+    "dimensions_m": [
+      0.2,
+      0.12,
+      0.1
+    ],
+    "collider": "two simplified BoxColliders",
+    "pivot": "helmet mount hinge",
+    "emissive_required": true,
+    "texture_resolution": 1024,
+    "triangles": 1424,
+    "measured_size": [
+      0.224,
+      0.1566,
+      0.1047
+    ],
+    "measured_min": [
+      -0.112,
+      -0.0766,
+      -0.0322
+    ],
+    "parts": 8,
+    "materials": [
+      "HD_MAT_NIGHT_VISION_GOGGLES_CHARCOAL_BODY",
+      "HD_MAT_NIGHT_VISION_GOGGLES_GLASS_INDICATOR",
+      "HD_MAT_NIGHT_VISION_GOGGLES_OLIVE_DETAIL",
+      "HD_MAT_NIGHT_VISION_GOGGLES_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.2,
+      0.12,
+      0.1
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_NightVisionGoggles.fbx",
+    "fbx_bytes": 69324,
+    "atlas": "HD_NightVisionGoggles_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_NIGHT_VISION_GOGGLES_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_NIGHT_VISION_GOGGLES_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_NIGHT_VISION_GOGGLES_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_NIGHT_VISION_GOGGLES_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_NIGHT_VISION_GOGGLES_GLASS_INDICATOR"
+    ],
+    "atlas_group": "lighting_vision",
+    "secondary_tags": [
+      "wearable",
+      "vision",
+      "battery-powered"
+    ]
+  },
+  {
+    "pascal_name": "ThermalMonocular",
+    "asset_key": "thermal_monocular",
+    "display_name": "Thermal Monocular",
+    "slot": "vision",
+    "tradeoff": "detects heat; occupies one hand and has narrow field of view",
+    "ok": true,
+    "dimensions_m": [
+      0.075,
+      0.16,
+      0.09
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "right-hand grip center",
+    "emissive_required": true,
+    "texture_resolution": 1024,
+    "triangles": 1092,
+    "measured_size": [
+      0.1173,
+      0.1914,
+      0.0908
+    ],
+    "measured_min": [
+      -0.0723,
+      -0.0924,
+      -0.0428
+    ],
+    "parts": 7,
+    "materials": [
+      "HD_MAT_THERMAL_MONOCULAR_CHARCOAL_BODY",
+      "HD_MAT_THERMAL_MONOCULAR_GLASS_INDICATOR",
+      "HD_MAT_THERMAL_MONOCULAR_OLIVE_DETAIL",
+      "HD_MAT_THERMAL_MONOCULAR_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.075,
+      0.16,
+      0.09
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_ThermalMonocular.fbx",
+    "fbx_bytes": 60348,
+    "atlas": "HD_ThermalMonocular_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_THERMAL_MONOCULAR_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_THERMAL_MONOCULAR_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_THERMAL_MONOCULAR_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_THERMAL_MONOCULAR_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_THERMAL_MONOCULAR_GLASS_INDICATOR"
+    ],
+    "atlas_group": "lighting_vision",
+    "secondary_tags": [
+      "handheld",
+      "vision",
+      "thermal"
+    ]
+  },
+  {
+    "pascal_name": "UVTrackingLight",
+    "asset_key": "uv_tracking_light",
+    "display_name": "UV Tracking Light",
+    "slot": "flashlight",
+    "tradeoff": "reveals biological traces; poor general illumination",
+    "ok": true,
+    "dimensions_m": [
+      0.065,
+      0.05,
+      0.2
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "right-hand grip center",
+    "emissive_required": true,
+    "texture_resolution": 1024,
+    "triangles": 540,
+    "measured_size": [
+      0.065,
+      0.068,
+      0.1925
+    ],
+    "measured_min": [
+      -0.0325,
+      -0.035,
+      -0.085
+    ],
+    "parts": 5,
+    "materials": [
+      "HD_MAT_UV_TRACKING_LIGHT_CHARCOAL_BODY",
+      "HD_MAT_UV_TRACKING_LIGHT_GLASS_INDICATOR",
+      "HD_MAT_UV_TRACKING_LIGHT_OLIVE_DETAIL",
+      "HD_MAT_UV_TRACKING_LIGHT_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.065,
+      0.05,
+      0.2
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_UVTrackingLight.fbx",
+    "fbx_bytes": 45420,
+    "atlas": "HD_UVTrackingLight_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_UV_TRACKING_LIGHT_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_UV_TRACKING_LIGHT_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_UV_TRACKING_LIGHT_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_UV_TRACKING_LIGHT_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_UV_TRACKING_LIGHT_GLASS_INDICATOR"
+    ],
+    "atlas_group": "lighting_vision",
+    "secondary_tags": [
+      "handheld",
+      "tracking",
+      "uv-light"
+    ]
+  },
+  {
+    "pascal_name": "CreatureBaitCanister",
+    "asset_key": "creature_bait_canister",
+    "display_name": "Creature Bait Canister",
+    "slot": "utility",
+    "tradeoff": "draws the target; can also attract unwanted wildlife",
+    "ok": true,
+    "dimensions_m": [
+      0.15,
+      0.15,
+      0.22
+    ],
+    "collider": "one simplified CapsuleCollider",
+    "pivot": "floor-contact center",
+    "emissive_required": false,
+    "texture_resolution": 1024,
+    "triangles": 1968,
+    "measured_size": [
+      0.146,
+      0.146,
+      0.2612
+    ],
+    "measured_min": [
+      -0.073,
+      -0.073,
+      -0.0005
+    ],
+    "parts": 7,
+    "materials": [
+      "HD_MAT_CREATURE_BAIT_CANISTER_CHARCOAL_BODY",
+      "HD_MAT_CREATURE_BAIT_CANISTER_OLIVE_DETAIL",
+      "HD_MAT_CREATURE_BAIT_CANISTER_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.15,
+      0.15,
+      0.22
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_CreatureBaitCanister.fbx",
+    "fbx_bytes": 72220,
+    "atlas": "HD_CreatureBaitCanister_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_CREATURE_BAIT_CANISTER_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_CREATURE_BAIT_CANISTER_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_CREATURE_BAIT_CANISTER_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_CREATURE_BAIT_CANISTER_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": false,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [],
+    "atlas_group": "tracking_tools",
+    "secondary_tags": [
+      "deployable",
+      "tracking",
+      "consumable"
+    ]
+  },
+  {
+    "pascal_name": "MotionSensorAlarm",
+    "asset_key": "motion_sensor_alarm",
+    "display_name": "Motion Sensor Alarm",
+    "slot": "utility",
+    "tradeoff": "warns of movement; false triggers from players and wildlife",
+    "ok": true,
+    "dimensions_m": [
+      0.12,
+      0.08,
+      0.16
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "folding-leg floor center",
+    "emissive_required": true,
+    "texture_resolution": 1024,
+    "triangles": 1208,
+    "measured_size": [
+      0.1515,
+      0.09,
+      0.2011
+    ],
+    "measured_min": [
+      -0.0758,
+      -0.0575,
+      -0.005
+    ],
+    "parts": 6,
+    "materials": [
+      "HD_MAT_MOTION_SENSOR_ALARM_CHARCOAL_BODY",
+      "HD_MAT_MOTION_SENSOR_ALARM_GLASS_INDICATOR",
+      "HD_MAT_MOTION_SENSOR_ALARM_OLIVE_DETAIL",
+      "HD_MAT_MOTION_SENSOR_ALARM_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.12,
+      0.08,
+      0.16
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_MotionSensorAlarm.fbx",
+    "fbx_bytes": 60956,
+    "atlas": "HD_MotionSensorAlarm_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_MOTION_SENSOR_ALARM_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_MOTION_SENSOR_ALARM_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_MOTION_SENSOR_ALARM_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_MOTION_SENSOR_ALARM_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_MOTION_SENSOR_ALARM_GLASS_INDICATOR"
+    ],
+    "atlas_group": "tracking_tools",
+    "secondary_tags": [
+      "deployable",
+      "tracking",
+      "alarm"
+    ]
+  },
+  {
+    "pascal_name": "ScentNeutralizerSpray",
+    "asset_key": "scent_neutralizer_spray",
+    "display_name": "Scent Neutralizer Spray",
+    "slot": "utility",
+    "tradeoff": "reduces scent trail temporarily; rain shortens its duration",
+    "ok": true,
+    "dimensions_m": [
+      0.06,
+      0.06,
+      0.19
+    ],
+    "collider": "one simplified CapsuleCollider",
+    "pivot": "floor-contact center",
+    "emissive_required": false,
+    "texture_resolution": 1024,
+    "triangles": 628,
+    "measured_size": [
+      0.057,
+      0.0638,
+      0.1855
+    ],
+    "measured_min": [
+      -0.0285,
+      -0.033,
+      0.0025
+    ],
+    "parts": 5,
+    "materials": [
+      "HD_MAT_SCENT_NEUTRALIZER_SPRAY_CHARCOAL_BODY",
+      "HD_MAT_SCENT_NEUTRALIZER_SPRAY_OLIVE_DETAIL",
+      "HD_MAT_SCENT_NEUTRALIZER_SPRAY_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.06,
+      0.06,
+      0.19
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_ScentNeutralizerSpray.fbx",
+    "fbx_bytes": 44572,
+    "atlas": "HD_ScentNeutralizerSpray_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_SCENT_NEUTRALIZER_SPRAY_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_SCENT_NEUTRALIZER_SPRAY_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_SCENT_NEUTRALIZER_SPRAY_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_SCENT_NEUTRALIZER_SPRAY_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": false,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [],
+    "atlas_group": "tracking_tools",
+    "secondary_tags": [
+      "consumable",
+      "stealth",
+      "scent"
+    ]
+  },
+  {
+    "pascal_name": "MedicalKit",
+    "asset_key": "medical_kit",
+    "display_name": "Medical Kit",
+    "slot": "medical",
+    "tradeoff": "restores health and stops bleeding; slow use animation",
+    "ok": true,
+    "dimensions_m": [
+      0.32,
+      0.12,
+      0.28
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "floor-contact center",
+    "emissive_required": false,
+    "texture_resolution": 1024,
+    "triangles": 1476,
+    "measured_size": [
+      0.32,
+      0.1362,
+      0.2874
+    ],
+    "measured_min": [
+      -0.16,
+      -0.0762,
+      0
+    ],
+    "parts": 9,
+    "materials": [
+      "HD_MAT_MEDICAL_KIT_CREAM_MARKING",
+      "HD_MAT_MEDICAL_KIT_DARK_HARDWARE",
+      "HD_MAT_MEDICAL_KIT_OLIVE_CANVAS",
+      "HD_MAT_MEDICAL_KIT_RUST_RED"
+    ],
+    "collider_size": [
+      0.32,
+      0.12,
+      0.28
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_MedicalKit.fbx",
+    "fbx_bytes": 71772,
+    "atlas": "HD_MedicalKit_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_MEDICAL_KIT_OLIVE_CANVAS",
+        "key": "olive_canvas",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "canvas",
+          "gentle-fading"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_MEDICAL_KIT_CREAM_MARKING",
+        "key": "cream_marking",
+        "emissive": false,
+        "tags": [
+          "cream",
+          "medical-cue",
+          "painted"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_MEDICAL_KIT_RUST_RED",
+        "key": "rust_red",
+        "emissive": false,
+        "tags": [
+          "rust-red",
+          "accent",
+          "fabric"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_MEDICAL_KIT_DARK_HARDWARE",
+        "key": "dark_hardware",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "metal",
+          "hardware"
+        ]
+      }
+    ],
+    "emissive_materials": [],
+    "atlas_group": "medical",
+    "secondary_tags": [
+      "medical",
+      "healing",
+      "carry-case"
+    ]
+  },
+  {
+    "pascal_name": "AdrenalineInjector",
+    "asset_key": "adrenaline_injector",
+    "display_name": "Adrenaline Injector",
+    "slot": "medical",
+    "tradeoff": "temporary speed and stamina; does not restore health",
+    "ok": true,
+    "dimensions_m": [
+      0.04,
+      0.04,
+      0.16
+    ],
+    "collider": "one simplified CapsuleCollider",
+    "pivot": "hand grip center",
+    "emissive_required": false,
+    "texture_resolution": 1024,
+    "triangles": 1168,
+    "measured_size": [
+      0.0508,
+      0.0508,
+      0.1635
+    ],
+    "measured_min": [
+      -0.0254,
+      -0.0254,
+      -0.001
+    ],
+    "parts": 5,
+    "materials": [
+      "HD_MAT_ADRENALINE_INJECTOR_CREAM_MARKING",
+      "HD_MAT_ADRENALINE_INJECTOR_DARK_HARDWARE",
+      "HD_MAT_ADRENALINE_INJECTOR_OLIVE_CANVAS",
+      "HD_MAT_ADRENALINE_INJECTOR_RUST_RED"
+    ],
+    "collider_size": [
+      0.04,
+      0.04,
+      0.16
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_AdrenalineInjector.fbx",
+    "fbx_bytes": 54316,
+    "atlas": "HD_AdrenalineInjector_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_ADRENALINE_INJECTOR_OLIVE_CANVAS",
+        "key": "olive_canvas",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "canvas",
+          "gentle-fading"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_ADRENALINE_INJECTOR_CREAM_MARKING",
+        "key": "cream_marking",
+        "emissive": false,
+        "tags": [
+          "cream",
+          "medical-cue",
+          "painted"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_ADRENALINE_INJECTOR_RUST_RED",
+        "key": "rust_red",
+        "emissive": false,
+        "tags": [
+          "rust-red",
+          "accent",
+          "fabric"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_ADRENALINE_INJECTOR_DARK_HARDWARE",
+        "key": "dark_hardware",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "metal",
+          "hardware"
+        ]
+      }
+    ],
+    "emissive_materials": [],
+    "atlas_group": "medical",
+    "secondary_tags": [
+      "medical",
+      "consumable",
+      "stamina"
+    ]
+  },
+  {
+    "pascal_name": "FieldRespirator",
+    "asset_key": "field_respirator",
+    "display_name": "Field Respirator",
+    "slot": "medical",
+    "tradeoff": "protects from spores and gas; narrows breathing audio and vision",
+    "ok": true,
+    "dimensions_m": [
+      0.2,
+      0.13,
+      0.18
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "face attachment center",
+    "emissive_required": false,
+    "texture_resolution": 1024,
+    "triangles": 1096,
+    "measured_size": [
+      0.2748,
+      0.1796,
+      0.1724
+    ],
+    "measured_min": [
+      -0.1374,
+      -0.0925,
+      -0.0862
+    ],
+    "parts": 6,
+    "materials": [
+      "HD_MAT_FIELD_RESPIRATOR_CREAM_MARKING",
+      "HD_MAT_FIELD_RESPIRATOR_DARK_HARDWARE",
+      "HD_MAT_FIELD_RESPIRATOR_OLIVE_CANVAS",
+      "HD_MAT_FIELD_RESPIRATOR_RUST_RED"
+    ],
+    "collider_size": [
+      0.2,
+      0.13,
+      0.18
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_FieldRespirator.fbx",
+    "fbx_bytes": 58284,
+    "atlas": "HD_FieldRespirator_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_FIELD_RESPIRATOR_OLIVE_CANVAS",
+        "key": "olive_canvas",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "canvas",
+          "gentle-fading"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_RESPIRATOR_CREAM_MARKING",
+        "key": "cream_marking",
+        "emissive": false,
+        "tags": [
+          "cream",
+          "medical-cue",
+          "painted"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_RESPIRATOR_RUST_RED",
+        "key": "rust_red",
+        "emissive": false,
+        "tags": [
+          "rust-red",
+          "accent",
+          "fabric"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_RESPIRATOR_DARK_HARDWARE",
+        "key": "dark_hardware",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "metal",
+          "hardware"
+        ]
+      }
+    ],
+    "emissive_materials": [],
+    "atlas_group": "medical",
+    "secondary_tags": [
+      "wearable",
+      "medical",
+      "air-filter"
+    ]
+  },
+  {
+    "pascal_name": "TraumaKit",
+    "asset_key": "trauma_kit",
+    "display_name": "Trauma Kit",
+    "slot": "medical",
+    "tradeoff": "revives or stabilizes critical injuries; bulky and single-use",
+    "ok": true,
+    "dimensions_m": [
+      0.42,
+      0.18,
+      0.35
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "floor-contact center",
+    "emissive_required": false,
+    "texture_resolution": 2048,
+    "triangles": 1692,
+    "measured_size": [
+      0.5972,
+      0.2012,
+      0.3564
+    ],
+    "measured_min": [
+      -0.2986,
+      -0.1112,
+      0
+    ],
+    "parts": 11,
+    "materials": [
+      "HD_MAT_TRAUMA_KIT_CREAM_MARKING",
+      "HD_MAT_TRAUMA_KIT_DARK_HARDWARE",
+      "HD_MAT_TRAUMA_KIT_OLIVE_CANVAS",
+      "HD_MAT_TRAUMA_KIT_RUST_RED"
+    ],
+    "collider_size": [
+      0.42,
+      0.18,
+      0.35
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_TraumaKit.fbx",
+    "fbx_bytes": 80956,
+    "atlas": "HD_TraumaKit_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_TRAUMA_KIT_OLIVE_CANVAS",
+        "key": "olive_canvas",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "canvas",
+          "gentle-fading"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_TRAUMA_KIT_CREAM_MARKING",
+        "key": "cream_marking",
+        "emissive": false,
+        "tags": [
+          "cream",
+          "medical-cue",
+          "painted"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_TRAUMA_KIT_RUST_RED",
+        "key": "rust_red",
+        "emissive": false,
+        "tags": [
+          "rust-red",
+          "accent",
+          "fabric"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_TRAUMA_KIT_DARK_HARDWARE",
+        "key": "dark_hardware",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "metal",
+          "hardware"
+        ]
+      }
+    ],
+    "emissive_materials": [],
+    "atlas_group": "medical",
+    "secondary_tags": [
+      "medical",
+      "revive",
+      "large-carry-case"
+    ]
+  },
+  {
+    "pascal_name": "LightHunterVest",
+    "asset_key": "light_hunter_vest",
+    "display_name": "Light Hunter Vest",
+    "slot": "armor",
+    "tradeoff": "moderate protection with minimal movement penalty",
+    "ok": true,
+    "dimensions_m": [
+      0.52,
+      0.22,
+      0.7
+    ],
+    "collider": "three simplified BoxColliders",
+    "pivot": "wearer chest attachment point",
+    "emissive_required": false,
+    "texture_resolution": 2048,
+    "triangles": 972,
+    "measured_size": [
+      0.68,
+      0.3075,
+      0.5875
+    ],
+    "measured_min": [
+      -0.34,
+      -0.1825,
+      -0.26
+    ],
+    "parts": 9,
+    "materials": [
+      "HD_MAT_LIGHT_HUNTER_VEST_BRASS_BUCKLE",
+      "HD_MAT_LIGHT_HUNTER_VEST_BROWN_WEBBING",
+      "HD_MAT_LIGHT_HUNTER_VEST_OLIVE_CANVAS"
+    ],
+    "collider_size": [
+      0.52,
+      0.22,
+      0.7
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_LightHunterVest.fbx",
+    "fbx_bytes": 62236,
+    "atlas": "HD_LightHunterVest_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_LIGHT_HUNTER_VEST_OLIVE_CANVAS",
+        "key": "olive_canvas",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "canvas",
+          "fabric-weave"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_LIGHT_HUNTER_VEST_CHARCOAL_PLATE",
+        "key": "charcoal_plate",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "protective",
+          "edge-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_LIGHT_HUNTER_VEST_BROWN_WEBBING",
+        "key": "brown_webbing",
+        "emissive": false,
+        "tags": [
+          "leather",
+          "webbing",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_LIGHT_HUNTER_VEST_BRASS_BUCKLE",
+        "key": "brass_buckle",
+        "emissive": false,
+        "tags": [
+          "aged-brass",
+          "fastener",
+          "restrained-wear"
+        ]
+      }
+    ],
+    "emissive_materials": [],
+    "atlas_group": "armor_carry",
+    "secondary_tags": [
+      "wearable",
+      "armor",
+      "light"
+    ]
+  },
+  {
+    "pascal_name": "HeavyHunterVest",
+    "asset_key": "heavy_hunter_vest",
+    "display_name": "Heavy Hunter Vest",
+    "slot": "armor",
+    "tradeoff": "strong protection; slower movement and increased noise",
+    "ok": true,
+    "dimensions_m": [
+      0.58,
+      0.28,
+      0.75
+    ],
+    "collider": "four simplified BoxColliders",
+    "pivot": "wearer chest attachment point",
+    "emissive_required": false,
+    "texture_resolution": 2048,
+    "triangles": 1512,
+    "measured_size": [
+      0.68,
+      0.3225,
+      0.665
+    ],
+    "measured_min": [
+      -0.34,
+      -0.1825,
+      -0.28
+    ],
+    "parts": 14,
+    "materials": [
+      "HD_MAT_HEAVY_HUNTER_VEST_BRASS_BUCKLE",
+      "HD_MAT_HEAVY_HUNTER_VEST_BROWN_WEBBING",
+      "HD_MAT_HEAVY_HUNTER_VEST_CHARCOAL_PLATE",
+      "HD_MAT_HEAVY_HUNTER_VEST_OLIVE_CANVAS"
+    ],
+    "collider_size": [
+      0.58,
+      0.28,
+      0.75
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_HeavyHunterVest.fbx",
+    "fbx_bytes": 86508,
+    "atlas": "HD_HeavyHunterVest_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_HEAVY_HUNTER_VEST_OLIVE_CANVAS",
+        "key": "olive_canvas",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "canvas",
+          "fabric-weave"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_HUNTER_VEST_CHARCOAL_PLATE",
+        "key": "charcoal_plate",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "protective",
+          "edge-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_HUNTER_VEST_BROWN_WEBBING",
+        "key": "brown_webbing",
+        "emissive": false,
+        "tags": [
+          "leather",
+          "webbing",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_HUNTER_VEST_BRASS_BUCKLE",
+        "key": "brass_buckle",
+        "emissive": false,
+        "tags": [
+          "aged-brass",
+          "fastener",
+          "restrained-wear"
+        ]
+      }
+    ],
+    "emissive_materials": [],
+    "atlas_group": "armor_carry",
+    "secondary_tags": [
+      "wearable",
+      "armor",
+      "heavy"
+    ]
+  },
+  {
+    "pascal_name": "TranquilizerPistol",
+    "asset_key": "tranquilizer_pistol",
+    "display_name": "Tranquilizer Pistol",
+    "slot": "sidearm",
+    "tradeoff": "builds sedation over time; low immediate stopping power",
+    "ok": true,
+    "dimensions_m": [
+      0.06,
+      0.24,
+      0.16
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "right-hand grip center",
+    "emissive_required": true,
+    "texture_resolution": 2048,
+    "triangles": 2028,
+    "measured_size": [
+      0.056,
+      0.2369,
+      0.252
+    ],
+    "measured_min": [
+      -0.028,
+      -0.1042,
+      -0.1215
+    ],
+    "parts": 13,
+    "materials": [
+      "HD_MAT_TRANQUILIZER_PISTOL_CHARCOAL_BODY",
+      "HD_MAT_TRANQUILIZER_PISTOL_GLASS_INDICATOR",
+      "HD_MAT_TRANQUILIZER_PISTOL_OLIVE_DETAIL",
+      "HD_MAT_TRANQUILIZER_PISTOL_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.06,
+      0.24,
+      0.16
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_TranquilizerPistol.fbx",
+    "fbx_bytes": 93852,
+    "atlas": "HD_TranquilizerPistol_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_TRANQUILIZER_PISTOL_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_TRANQUILIZER_PISTOL_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_TRANQUILIZER_PISTOL_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_TRANQUILIZER_PISTOL_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_TRANQUILIZER_PISTOL_GLASS_INDICATOR"
+    ],
+    "atlas_group": "weapons",
+    "secondary_tags": [
+      "weapon",
+      "sidearm",
+      "nonlethal-control"
+    ]
+  },
+  {
+    "pascal_name": "FieldRepairKit",
+    "asset_key": "field_repair_kit",
+    "display_name": "Field Repair Kit",
+    "slot": "utility",
+    "tradeoff": "repairs electronics and generators; heavy with limited charges",
+    "ok": true,
+    "dimensions_m": [
+      0.38,
+      0.16,
+      0.26
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "floor-contact center",
+    "emissive_required": false,
+    "texture_resolution": 1024,
+    "triangles": 1584,
+    "measured_size": [
+      0.38,
+      0.191,
+      0.3295
+    ],
+    "measured_min": [
+      -0.19,
+      -0.111,
+      0
+    ],
+    "parts": 10,
+    "materials": [
+      "HD_MAT_FIELD_REPAIR_KIT_CHARCOAL_BODY",
+      "HD_MAT_FIELD_REPAIR_KIT_OLIVE_DETAIL",
+      "HD_MAT_FIELD_REPAIR_KIT_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.38,
+      0.16,
+      0.26
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_FieldRepairKit.fbx",
+    "fbx_bytes": 75836,
+    "atlas": "HD_FieldRepairKit_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_FIELD_REPAIR_KIT_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_REPAIR_KIT_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_REPAIR_KIT_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_REPAIR_KIT_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": false,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [],
+    "atlas_group": "tracking_tools",
+    "secondary_tags": [
+      "tool",
+      "repair",
+      "mission-equipment"
+    ]
+  },
+  {
+    "pascal_name": "HunterBodyCamera",
+    "asset_key": "hunter_body_camera",
+    "display_name": "Hunter Body Camera",
+    "slot": "accessory",
+    "tradeoff": "adds bounty evidence only when the camera is extracted",
+    "ok": true,
+    "dimensions_m": [
+      0.055,
+      0.035,
+      0.085
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "vest clip attachment plane",
+    "emissive_required": true,
+    "texture_resolution": 1024,
+    "triangles": 1172,
+    "measured_size": [
+      0.052,
+      0.0566,
+      0.095
+    ],
+    "measured_min": [
+      -0.026,
+      -0.0306,
+      -0.041
+    ],
+    "parts": 6,
+    "materials": [
+      "HD_MAT_HUNTER_BODY_CAMERA_CHARCOAL_BODY",
+      "HD_MAT_HUNTER_BODY_CAMERA_GLASS_INDICATOR",
+      "HD_MAT_HUNTER_BODY_CAMERA_OLIVE_DETAIL",
+      "HD_MAT_HUNTER_BODY_CAMERA_RUBBER_BRASS"
+    ],
+    "collider_size": [
+      0.055,
+      0.035,
+      0.085
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_HunterBodyCamera.fbx",
+    "fbx_bytes": 58188,
+    "atlas": "HD_HunterBodyCamera_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_HUNTER_BODY_CAMERA_CHARCOAL_BODY",
+        "key": "charcoal_body",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "polymer",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HUNTER_BODY_CAMERA_OLIVE_DETAIL",
+        "key": "olive_detail",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HUNTER_BODY_CAMERA_RUBBER_BRASS",
+        "key": "rubber_brass",
+        "emissive": false,
+        "tags": [
+          "rubber",
+          "aged-brass",
+          "grip"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HUNTER_BODY_CAMERA_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_HUNTER_BODY_CAMERA_GLASS_INDICATOR"
+    ],
+    "atlas_group": "tracking_tools",
+    "secondary_tags": [
+      "wearable",
+      "evidence",
+      "camera"
+    ]
+  },
+  {
+    "pascal_name": "StandardHunterBackpack",
+    "asset_key": "standard_hunter_backpack",
+    "display_name": "Standard Hunter Backpack",
+    "slot": "backpack",
+    "tradeoff": "standard capacity with balanced weight and noise",
+    "ok": true,
+    "dimensions_m": [
+      0.38,
+      0.22,
+      0.56
+    ],
+    "collider": "three simplified BoxColliders",
+    "pivot": "back attachment plane center",
+    "emissive_required": false,
+    "texture_resolution": 2048,
+    "triangles": 1476,
+    "measured_size": [
+      0.56,
+      0.3385,
+      0.5633
+    ],
+    "measured_min": [
+      -0.28,
+      -0.1725,
+      -0.2519
+    ],
+    "parts": 9,
+    "materials": [
+      "HD_MAT_STANDARD_HUNTER_BACKPACK_BRASS_BUCKLE",
+      "HD_MAT_STANDARD_HUNTER_BACKPACK_BROWN_WEBBING",
+      "HD_MAT_STANDARD_HUNTER_BACKPACK_OLIVE_CANVAS"
+    ],
+    "collider_size": [
+      0.38,
+      0.22,
+      0.56
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_StandardHunterBackpack.fbx",
+    "fbx_bytes": 70636,
+    "atlas": "HD_StandardHunterBackpack_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_STANDARD_HUNTER_BACKPACK_OLIVE_CANVAS",
+        "key": "olive_canvas",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "canvas",
+          "fabric-weave"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_STANDARD_HUNTER_BACKPACK_CHARCOAL_PLATE",
+        "key": "charcoal_plate",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "protective",
+          "edge-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_STANDARD_HUNTER_BACKPACK_BROWN_WEBBING",
+        "key": "brown_webbing",
+        "emissive": false,
+        "tags": [
+          "leather",
+          "webbing",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_STANDARD_HUNTER_BACKPACK_BRASS_BUCKLE",
+        "key": "brass_buckle",
+        "emissive": false,
+        "tags": [
+          "aged-brass",
+          "fastener",
+          "restrained-wear"
+        ]
+      }
+    ],
+    "emissive_materials": [],
+    "atlas_group": "armor_carry",
+    "secondary_tags": [
+      "wearable",
+      "carrying",
+      "standard"
+    ]
+  },
+  {
+    "pascal_name": "FieldPistol",
+    "asset_key": "field_pistol",
+    "display_name": "9mm Field Pistol",
+    "slot": "sidearm",
+    "tradeoff": "reliable and inexpensive; low creature stopping power",
+    "ok": true,
+    "dimensions_m": [
+      0.05,
+      0.19,
+      0.14
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "right-hand grip center",
+    "emissive_required": true,
+    "texture_resolution": 2048,
+    "triangles": 1640,
+    "measured_size": [
+      0.0556,
+      0.2138,
+      0.2425
+    ],
+    "measured_min": [
+      -0.0278,
+      -0.1042,
+      -0.1215
+    ],
+    "parts": 10,
+    "materials": [
+      "HD_MAT_FIELD_PISTOL_GUNMETAL",
+      "HD_MAT_FIELD_PISTOL_LEATHER_BRASS",
+      "HD_MAT_FIELD_PISTOL_WALNUT"
+    ],
+    "collider_size": [
+      0.05,
+      0.19,
+      0.14
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_FieldPistol.fbx",
+    "fbx_bytes": 76828,
+    "atlas": "HD_FieldPistol_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_FIELD_PISTOL_GUNMETAL",
+        "key": "gunmetal",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "gunmetal",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_PISTOL_WALNUT",
+        "key": "walnut",
+        "emissive": false,
+        "tags": [
+          "warm-walnut",
+          "hand-painted-grain",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_PISTOL_OLIVE",
+        "key": "olive",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_PISTOL_RUBBER",
+        "key": "rubber",
+        "emissive": false,
+        "tags": [
+          "black-rubber",
+          "grip",
+          "matte"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_PISTOL_LEATHER_BRASS",
+        "key": "leather_brass",
+        "emissive": false,
+        "tags": [
+          "brown-leather",
+          "aged-brass",
+          "fastener"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_FIELD_PISTOL_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_FIELD_PISTOL_GLASS_INDICATOR"
+    ],
+    "atlas_group": "weapons",
+    "secondary_tags": [
+      "weapon",
+      "sidearm",
+      "starter"
+    ]
+  },
+  {
+    "pascal_name": "HeavyHuntingHandgun",
+    "asset_key": "heavy_hunting_handgun",
+    "display_name": "Heavy Hunting Handgun",
+    "slot": "sidearm",
+    "tradeoff": "strong damage; severe recoil and expensive ammunition",
+    "ok": true,
+    "dimensions_m": [
+      0.06,
+      0.3,
+      0.17
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "right-hand grip center",
+    "emissive_required": true,
+    "texture_resolution": 2048,
+    "triangles": 1936,
+    "measured_size": [
+      0.06,
+      0.2626,
+      0.2465
+    ],
+    "measured_min": [
+      -0.03,
+      -0.1042,
+      -0.1215
+    ],
+    "parts": 12,
+    "materials": [
+      "HD_MAT_HEAVY_HUNTING_HANDGUN_GUNMETAL",
+      "HD_MAT_HEAVY_HUNTING_HANDGUN_LEATHER_BRASS",
+      "HD_MAT_HEAVY_HUNTING_HANDGUN_WALNUT"
+    ],
+    "collider_size": [
+      0.06,
+      0.3,
+      0.17
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_HeavyHuntingHandgun.fbx",
+    "fbx_bytes": 87388,
+    "atlas": "HD_HeavyHuntingHandgun_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_HEAVY_HUNTING_HANDGUN_GUNMETAL",
+        "key": "gunmetal",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "gunmetal",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_HUNTING_HANDGUN_WALNUT",
+        "key": "walnut",
+        "emissive": false,
+        "tags": [
+          "warm-walnut",
+          "hand-painted-grain",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_HUNTING_HANDGUN_OLIVE",
+        "key": "olive",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_HUNTING_HANDGUN_RUBBER",
+        "key": "rubber",
+        "emissive": false,
+        "tags": [
+          "black-rubber",
+          "grip",
+          "matte"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_HUNTING_HANDGUN_LEATHER_BRASS",
+        "key": "leather_brass",
+        "emissive": false,
+        "tags": [
+          "brown-leather",
+          "aged-brass",
+          "fastener"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HEAVY_HUNTING_HANDGUN_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_HEAVY_HUNTING_HANDGUN_GLASS_INDICATOR"
+    ],
+    "atlas_group": "weapons",
+    "secondary_tags": [
+      "weapon",
+      "sidearm",
+      "heavy-caliber"
+    ]
+  },
+  {
+    "pascal_name": "PumpShotgun",
+    "asset_key": "pump_shotgun",
+    "display_name": "Pump Shotgun",
+    "slot": "primary",
+    "tradeoff": "close-range burst damage; loud and slow to reload",
+    "ok": true,
+    "dimensions_m": [
+      0.13,
+      1,
+      0.22
+    ],
+    "collider": "two simplified BoxColliders",
+    "pivot": "right-hand primary grip center",
+    "emissive_required": true,
+    "texture_resolution": 2048,
+    "triangles": 2272,
+    "measured_size": [
+      0.2358,
+      0.9775,
+      0.3004
+    ],
+    "measured_min": [
+      -0.1683,
+      -0.4975,
+      -0.1874
+    ],
+    "parts": 12,
+    "materials": [
+      "HD_MAT_PUMP_SHOTGUN_GUNMETAL",
+      "HD_MAT_PUMP_SHOTGUN_LEATHER_BRASS",
+      "HD_MAT_PUMP_SHOTGUN_RUBBER",
+      "HD_MAT_PUMP_SHOTGUN_WALNUT"
+    ],
+    "collider_size": [
+      0.13,
+      1,
+      0.22
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_PumpShotgun.fbx",
+    "fbx_bytes": 95628,
+    "atlas": "HD_PumpShotgun_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_PUMP_SHOTGUN_GUNMETAL",
+        "key": "gunmetal",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "gunmetal",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_PUMP_SHOTGUN_WALNUT",
+        "key": "walnut",
+        "emissive": false,
+        "tags": [
+          "warm-walnut",
+          "hand-painted-grain",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_PUMP_SHOTGUN_OLIVE",
+        "key": "olive",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_PUMP_SHOTGUN_RUBBER",
+        "key": "rubber",
+        "emissive": false,
+        "tags": [
+          "black-rubber",
+          "grip",
+          "matte"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_PUMP_SHOTGUN_LEATHER_BRASS",
+        "key": "leather_brass",
+        "emissive": false,
+        "tags": [
+          "brown-leather",
+          "aged-brass",
+          "fastener"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_PUMP_SHOTGUN_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_PUMP_SHOTGUN_GLASS_INDICATOR"
+    ],
+    "atlas_group": "weapons",
+    "secondary_tags": [
+      "weapon",
+      "primary",
+      "shotgun"
+    ]
+  },
+  {
+    "pascal_name": "SemiAutomaticShotgun",
+    "asset_key": "semi_automatic_shotgun",
+    "display_name": "Semi-Automatic Shotgun",
+    "slot": "primary",
+    "tradeoff": "fast follow-up shots; expensive and ammunition-hungry",
+    "ok": true,
+    "dimensions_m": [
+      0.13,
+      0.96,
+      0.23
+    ],
+    "collider": "two simplified BoxColliders",
+    "pivot": "right-hand primary grip center",
+    "emissive_required": true,
+    "texture_resolution": 2048,
+    "triangles": 2380,
+    "measured_size": [
+      0.2708,
+      0.9583,
+      0.3004
+    ],
+    "measured_min": [
+      -0.1683,
+      -0.4975,
+      -0.1874
+    ],
+    "parts": 13,
+    "materials": [
+      "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_GUNMETAL",
+      "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_LEATHER_BRASS",
+      "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_OLIVE",
+      "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_RUBBER",
+      "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_WALNUT"
+    ],
+    "collider_size": [
+      0.13,
+      0.96,
+      0.23
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_SemiAutomaticShotgun.fbx",
+    "fbx_bytes": 102556,
+    "atlas": "HD_SemiAutomaticShotgun_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_GUNMETAL",
+        "key": "gunmetal",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "gunmetal",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_WALNUT",
+        "key": "walnut",
+        "emissive": false,
+        "tags": [
+          "warm-walnut",
+          "hand-painted-grain",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_OLIVE",
+        "key": "olive",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_RUBBER",
+        "key": "rubber",
+        "emissive": false,
+        "tags": [
+          "black-rubber",
+          "grip",
+          "matte"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_LEATHER_BRASS",
+        "key": "leather_brass",
+        "emissive": false,
+        "tags": [
+          "brown-leather",
+          "aged-brass",
+          "fastener"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_SEMI_AUTOMATIC_SHOTGUN_GLASS_INDICATOR"
+    ],
+    "atlas_group": "weapons",
+    "secondary_tags": [
+      "weapon",
+      "primary",
+      "shotgun"
+    ]
+  },
+  {
+    "pascal_name": "CompactCarbine",
+    "asset_key": "compact_carbine",
+    "display_name": "Compact Carbine",
+    "slot": "primary",
+    "tradeoff": "balanced general-purpose weapon; no major specialization",
+    "ok": true,
+    "dimensions_m": [
+      0.12,
+      0.78,
+      0.25
+    ],
+    "collider": "two simplified BoxColliders",
+    "pivot": "right-hand primary grip center",
+    "emissive_required": true,
+    "texture_resolution": 2048,
+    "triangles": 2464,
+    "measured_size": [
+      0.2358,
+      0.7789,
+      0.4217
+    ],
+    "measured_min": [
+      -0.1683,
+      -0.3934,
+      -0.2217
+    ],
+    "parts": 14,
+    "materials": [
+      "HD_MAT_COMPACT_CARBINE_GLASS_INDICATOR",
+      "HD_MAT_COMPACT_CARBINE_GUNMETAL",
+      "HD_MAT_COMPACT_CARBINE_LEATHER_BRASS",
+      "HD_MAT_COMPACT_CARBINE_OLIVE",
+      "HD_MAT_COMPACT_CARBINE_RUBBER"
+    ],
+    "collider_size": [
+      0.12,
+      0.78,
+      0.25
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_CompactCarbine.fbx",
+    "fbx_bytes": 107212,
+    "atlas": "HD_CompactCarbine_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_COMPACT_CARBINE_GUNMETAL",
+        "key": "gunmetal",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "gunmetal",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_COMPACT_CARBINE_WALNUT",
+        "key": "walnut",
+        "emissive": false,
+        "tags": [
+          "warm-walnut",
+          "hand-painted-grain",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_COMPACT_CARBINE_OLIVE",
+        "key": "olive",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_COMPACT_CARBINE_RUBBER",
+        "key": "rubber",
+        "emissive": false,
+        "tags": [
+          "black-rubber",
+          "grip",
+          "matte"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_COMPACT_CARBINE_LEATHER_BRASS",
+        "key": "leather_brass",
+        "emissive": false,
+        "tags": [
+          "brown-leather",
+          "aged-brass",
+          "fastener"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_COMPACT_CARBINE_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_COMPACT_CARBINE_GLASS_INDICATOR"
+    ],
+    "atlas_group": "weapons",
+    "secondary_tags": [
+      "weapon",
+      "primary",
+      "carbine"
+    ]
+  },
+  {
+    "pascal_name": "BigGameRifle",
+    "asset_key": "big_game_rifle",
+    "display_name": "Big-Game Rifle",
+    "slot": "primary",
+    "tradeoff": "extreme weak-point damage; very heavy and extremely loud",
+    "ok": true,
+    "dimensions_m": [
+      0.13,
+      1.18,
+      0.26
+    ],
+    "collider": "two simplified BoxColliders",
+    "pivot": "right-hand primary grip center",
+    "emissive_required": true,
+    "texture_resolution": 2048,
+    "triangles": 2684,
+    "measured_size": [
+      0.2358,
+      1.105,
+      0.4086
+    ],
+    "measured_min": [
+      -0.1683,
+      -0.4975,
+      -0.1874
+    ],
+    "parts": 15,
+    "materials": [
+      "HD_MAT_BIG_GAME_RIFLE_GLASS_INDICATOR",
+      "HD_MAT_BIG_GAME_RIFLE_GUNMETAL",
+      "HD_MAT_BIG_GAME_RIFLE_LEATHER_BRASS",
+      "HD_MAT_BIG_GAME_RIFLE_OLIVE",
+      "HD_MAT_BIG_GAME_RIFLE_RUBBER",
+      "HD_MAT_BIG_GAME_RIFLE_WALNUT"
+    ],
+    "collider_size": [
+      0.13,
+      1.18,
+      0.26
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_BigGameRifle.fbx",
+    "fbx_bytes": 114700,
+    "atlas": "HD_BigGameRifle_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_BIG_GAME_RIFLE_GUNMETAL",
+        "key": "gunmetal",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "gunmetal",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_BIG_GAME_RIFLE_WALNUT",
+        "key": "walnut",
+        "emissive": false,
+        "tags": [
+          "warm-walnut",
+          "hand-painted-grain",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_BIG_GAME_RIFLE_OLIVE",
+        "key": "olive",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_BIG_GAME_RIFLE_RUBBER",
+        "key": "rubber",
+        "emissive": false,
+        "tags": [
+          "black-rubber",
+          "grip",
+          "matte"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_BIG_GAME_RIFLE_LEATHER_BRASS",
+        "key": "leather_brass",
+        "emissive": false,
+        "tags": [
+          "brown-leather",
+          "aged-brass",
+          "fastener"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_BIG_GAME_RIFLE_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_BIG_GAME_RIFLE_GLASS_INDICATOR"
+    ],
+    "atlas_group": "weapons",
+    "secondary_tags": [
+      "weapon",
+      "primary",
+      "heavy-rifle"
+    ]
+  },
+  {
+    "pascal_name": "HunterCrossbow",
+    "asset_key": "hunter_crossbow",
+    "display_name": "Hunter Crossbow",
+    "slot": "primary",
+    "tradeoff": "quiet with recoverable bolts; slow reload and precise aim required",
+    "ok": true,
+    "dimensions_m": [
+      0.7,
+      0.78,
+      0.2
+    ],
+    "collider": "three simplified BoxColliders",
+    "pivot": "right-hand primary grip center",
+    "emissive_required": true,
+    "texture_resolution": 2048,
+    "triangles": 2028,
+    "measured_size": [
+      0.7063,
+      0.8055,
+      0.2997
+    ],
+    "measured_min": [
+      -0.3532,
+      -0.32,
+      -0.1897
+    ],
+    "parts": 11,
+    "materials": [
+      "HD_MAT_HUNTER_CROSSBOW_GUNMETAL",
+      "HD_MAT_HUNTER_CROSSBOW_LEATHER_BRASS",
+      "HD_MAT_HUNTER_CROSSBOW_OLIVE",
+      "HD_MAT_HUNTER_CROSSBOW_RUBBER",
+      "HD_MAT_HUNTER_CROSSBOW_WALNUT"
+    ],
+    "collider_size": [
+      0.7,
+      0.78,
+      0.2
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_HunterCrossbow.fbx",
+    "fbx_bytes": 91244,
+    "atlas": "HD_HunterCrossbow_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_HUNTER_CROSSBOW_GUNMETAL",
+        "key": "gunmetal",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "gunmetal",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HUNTER_CROSSBOW_WALNUT",
+        "key": "walnut",
+        "emissive": false,
+        "tags": [
+          "warm-walnut",
+          "hand-painted-grain",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HUNTER_CROSSBOW_OLIVE",
+        "key": "olive",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HUNTER_CROSSBOW_RUBBER",
+        "key": "rubber",
+        "emissive": false,
+        "tags": [
+          "black-rubber",
+          "grip",
+          "matte"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HUNTER_CROSSBOW_LEATHER_BRASS",
+        "key": "leather_brass",
+        "emissive": false,
+        "tags": [
+          "brown-leather",
+          "aged-brass",
+          "fastener"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_HUNTER_CROSSBOW_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_HUNTER_CROSSBOW_GLASS_INDICATOR"
+    ],
+    "atlas_group": "weapons",
+    "secondary_tags": [
+      "weapon",
+      "primary",
+      "quiet"
+    ]
+  },
+  {
+    "pascal_name": "RescueHatchet",
+    "asset_key": "rescue_hatchet",
+    "display_name": "Rescue Hatchet",
+    "slot": "tool",
+    "tradeoff": "requires no ammunition; extremely dangerous against creatures",
+    "ok": true,
+    "dimensions_m": [
+      0.2,
+      0.06,
+      0.55
+    ],
+    "collider": "one simplified BoxCollider",
+    "pivot": "right-hand grip center",
+    "emissive_required": true,
+    "texture_resolution": 2048,
+    "triangles": 1120,
+    "measured_size": [
+      0.208,
+      0.1956,
+      0.535
+    ],
+    "measured_min": [
+      -0.1736,
+      -0.0978,
+      -0.21
+    ],
+    "parts": 5,
+    "materials": [
+      "HD_MAT_RESCUE_HATCHET_GUNMETAL",
+      "HD_MAT_RESCUE_HATCHET_LEATHER_BRASS",
+      "HD_MAT_RESCUE_HATCHET_RUBBER",
+      "HD_MAT_RESCUE_HATCHET_WALNUT"
+    ],
+    "collider_size": [
+      0.2,
+      0.06,
+      0.55
+    ],
+    "collider_center": [
+      0,
+      0,
+      0
+    ],
+    "fbx": "HD_RescueHatchet.fbx",
+    "fbx_bytes": 54060,
+    "atlas": "HD_RescueHatchet_Atlas_Albedo.png",
+    "atlas_shared": false,
+    "material_table": [
+      {
+        "blender_material": "HD_MAT_RESCUE_HATCHET_GUNMETAL",
+        "key": "gunmetal",
+        "emissive": false,
+        "tags": [
+          "charcoal",
+          "gunmetal",
+          "restrained-wear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_RESCUE_HATCHET_WALNUT",
+        "key": "walnut",
+        "emissive": false,
+        "tags": [
+          "warm-walnut",
+          "hand-painted-grain",
+          "touch-polish"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_RESCUE_HATCHET_OLIVE",
+        "key": "olive",
+        "emissive": false,
+        "tags": [
+          "muted-olive",
+          "painted",
+          "field-gear"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_RESCUE_HATCHET_RUBBER",
+        "key": "rubber",
+        "emissive": false,
+        "tags": [
+          "black-rubber",
+          "grip",
+          "matte"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_RESCUE_HATCHET_LEATHER_BRASS",
+        "key": "leather_brass",
+        "emissive": false,
+        "tags": [
+          "brown-leather",
+          "aged-brass",
+          "fastener"
+        ]
+      },
+      {
+        "blender_material": "HD_MAT_RESCUE_HATCHET_GLASS_INDICATOR",
+        "key": "glass_indicator",
+        "emissive": true,
+        "tags": [
+          "dark-teal",
+          "glass",
+          "indicator"
+        ]
+      }
+    ],
+    "emissive_materials": [
+      "HD_MAT_RESCUE_HATCHET_GLASS_INDICATOR"
+    ],
+    "atlas_group": "weapons",
+    "secondary_tags": [
+      "weapon",
+      "melee",
+      "tool"
+    ]
+  }
+]

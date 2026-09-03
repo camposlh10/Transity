@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff405dbd86027046b4e3817039f57f6, type: 3}
+  m_Name: HD_SemiAutomaticShotgun
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Inventory.ItemDefinition
+  itemId: item.hd.semiautomaticshotgun
+  displayName: Semi-Automatic Shotgun
+  description: fast follow-up shots; expensive and ammunition-hungry
+  icon: {fileID: 21300000, guid: 4683a61275e5cc845b40b5352ed20a9c, type: 3}
+  category: 5
+  slot: 7
+  worldPrefab: {fileID: 3226652209897421051, guid: 579264279c8b2ee4cb58f68f0d18db6b, type: 3}
+  heldModel: {fileID: 919132149155446097, guid: 5b1c1563dbf444c4e90c27b3e8430a5a, type: 3}
+  behaviour: {fileID: 11400000, guid: 7dbaef8c1d94d274f85cfbadf42082bf, type: 2}
+  price: 720
+  stashLimit: 5
+  atRiskOnExpedition: 1

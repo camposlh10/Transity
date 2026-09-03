@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a56fea3a9641bd49bddf2eb897080c0, type: 3}
+  m_Name: Contract_CullThePack
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Missions.ContractDefinition
+  id: contract.hounds
+  title: Cull the Pack
+  briefing: Bramble hounds have been running the north ridge in numbers. Thin them
+    out. They break when you make noise -- and they come back.
+  kind: 0
+  tier: 1
+  creature: {fileID: 11400000, guid: 5fa412edd09ec634ab5238544999b64e, type: 2}
+  count: 5
+  spawnAsPack: 1
+  secondaryCreature: {fileID: 0}
+  secondaryCount: 0
+  secondaryAsPack: 1
+  rewardMultiplier: 1
+  completionBonus: 150
+  betrayalChance: 0
+  betrayalBonus: 600

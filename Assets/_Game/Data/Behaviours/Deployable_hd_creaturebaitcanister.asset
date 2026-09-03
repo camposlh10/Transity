@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b64d4eadd4bc3b9469fea1cebbc030b0, type: 3}
+  m_Name: Deployable_hd_creaturebaitcanister
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Inventory.DeployableBehaviour
+  prefab: {fileID: 741275525626152898, guid: d49528db38f68b84e9ab83ca4ca34ff5, type: 3}
+  placeDistance: 2
+  placeOnGround: 1
+  throwSpeed: 0
+  charges: 1

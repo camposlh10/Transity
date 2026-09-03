@@ -22,6 +22,15 @@ namespace Transity.Player
             }
         }
 
+        /// <summary>Owner only. For refusals the client already knows about.</summary>
+        public void NotifyLocal(string message)
+        {
+            if (IsOwner)
+            {
+                MessageReceived?.Invoke(message);
+            }
+        }
+
         [Rpc(SendTo.Owner)]
         void ShowMessageRpc(FixedString128Bytes message)
         {

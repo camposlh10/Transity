@@ -205,6 +205,15 @@ namespace Transity.Networking
 
         void HandleTransportFailure()
         {
+            // Same guard as HandleClientStopped. Without it, a transport failure during an
+            // offline host -- which this manager did not start and does not own -- drags the
+            // player out to the main menu.
+            if (Status == SessionStatus.Offline)
+            {
+                GameLog.Warn("Transport failure while offline; staying put.");
+                return;
+            }
+
             ReturnToMenu("Connection lost.");
         }
 

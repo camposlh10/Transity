@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2ab00df997b2b44ae75d4e04a9cf08, type: 3}
+  m_Name: Creature_StiltStalker
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Creatures.CreatureDefinition
+  id: creature.stiltstalker
+  displayName: Stilt Stalker
+  fieldNotes: Tall, pale, quiet. Follows at the edge of the torchlight and only closes
+    when you look away. Fast, fragile, and it screams when it commits. Aim for the
+    throat.
+  temperament: 1
+  shape: 2
+  bodyLength: 1.7
+  bodyHeight: 0.7
+  bodyWidth: 0.55
+  legLength: 1.8
+  color: {r: 0.62, g: 0.6, b: 0.55, a: 1}
+  eyeColor: {r: 0.7, g: 0.95, b: 1, a: 1}
+  weakPointLabel: throat sac
+  weakPointMultiplier: 3
+  maxHealth: 260
+  regenWhileRecovering: 9
+  fleeHealthFraction: 0.35
+  recoveredHealthFraction: 0.75
+  sedationThreshold: 90
+  sedationDecay: 5
+  collapseSeconds: 40
+  walkSpeed: 1.8
+  stalkSpeed: 2.8
+  runSpeed: 8
+  acceleration: 18
+  turnSpeedDegrees: 300
+  agentRadius: 0.5
+  agentHeight: 2.6
+  roamRadius: 40
+  sightRange: 40
+  sightAngle: 150
+  hearing: 1.4
+  secondsToNotice: 1.6
+  awarenessDecayPerSecond: 0.05
+  loseInterestSeconds: 22
+  territoryRadius: 0
+  attackRange: 2.9
+  attackDamage: 26
+  attackWindup: 0.45
+  lungeSpeed: 14
+  lungeSeconds: 0.3
+  attackRecovery: 0.6
+  attackCooldown: 1.1
+  bleedChance: 0.45
+  stalkDistance: 20
+  boldness: 0.25
+  skittishness: 0.3
+  packSize: 1
+  flankRadius: 7
+  packCohesionRadius: 14
+  bountyKill: 450
+  bountyCapture: 1000
+  voice: 25
+  alarmCall: 13
+  voicePitch: 1.45
+  footstepVolume: 0.5

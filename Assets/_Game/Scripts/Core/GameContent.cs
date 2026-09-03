@@ -1,4 +1,6 @@
+using Transity.Creatures;
 using Transity.Inventory;
+using Transity.Missions;
 using UnityEngine;
 
 namespace Transity.Core
@@ -10,8 +12,12 @@ namespace Transity.Core
     public sealed class GameContent : PersistentSingleton<GameContent>
     {
         [SerializeField] ItemRegistry itemRegistry;
+        [SerializeField] CreatureRegistry creatureRegistry;
+        [SerializeField] ContractRegistry contractRegistry;
 
         public static ItemRegistry ItemRegistry => Exists ? Instance.itemRegistry : null;
+        public static CreatureRegistry Creatures => Exists ? Instance.creatureRegistry : null;
+        public static ContractRegistry Contracts => Exists ? Instance.contractRegistry : null;
 
         protected override void Awake()
         {
@@ -29,6 +35,16 @@ namespace Transity.Core
             else
             {
                 itemRegistry.Rebuild();
+            }
+
+            if (creatureRegistry == null)
+            {
+                GameLog.Warn("GameContent has no CreatureRegistry assigned; the forest will be empty.");
+            }
+
+            if (contractRegistry == null)
+            {
+                GameLog.Warn("GameContent has no ContractRegistry assigned; nothing to hunt.");
             }
         }
     }

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e21ab8d6a512f14c92ca1f94c746ef1, type: 3}
+  m_Name: Weapon_hd_semiautomaticshotgun
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Inventory.WeaponBehaviour
+  fireMode: 0
+  automatic: 0
+  roundsPerMinute: 150
+  pellets: 8
+  range: 26
+  spreadDegrees: 6.5
+  aimSpreadDegrees: 4.5
+  damage: 12
+  weakPointMultiplier: 1.5
+  sedation: 0
+  bleedChance: 0.5
+  knockback: 4
+  magazineSize: 6
+  reloadSeconds: 2.6
+  usesAmmoBox: 1
+  recoilKick: 4
+  recoilRecoverySpeed: 8
+  aimFieldOfView: 60
+  noiseRadius: 85
+  fireSound: 2
+  muzzleOffset: {x: 0, y: 0.05, z: 0.5}

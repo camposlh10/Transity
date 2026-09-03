@@ -3,6 +3,8 @@
     "rootNamespace": "Transity.Tests",
     "references": [
         "Transity.Runtime",
+        "Unity.Netcode.Runtime",
+        "Unity.AI.Navigation",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

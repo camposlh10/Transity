@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff405dbd86027046b4e3817039f57f6, type: 3}
+  m_Name: HD_TraumaKit
+  m_EditorClassIdentifier: Transity.Runtime::Transity.Inventory.ItemDefinition
+  itemId: item.hd.traumakit
+  displayName: Trauma Kit
+  description: revives or stabilizes critical injuries; bulky and single-use
+  icon: {fileID: 21300000, guid: 81770a31dd8d16944a9647e1a114d89d, type: 3}
+  category: 1
+  slot: 4
+  worldPrefab: {fileID: 697938175398901435, guid: da497432e55a8524ab234dd7be0784e6, type: 3}
+  heldModel: {fileID: 919132149155446097, guid: 059e25ebd5b3eed4ba20e86c7f63caeb, type: 3}
+  behaviour: {fileID: 11400000, guid: 224932a152b2894479432dfbc3401214, type: 2}
+  price: 300
+  stashLimit: 10
+  atRiskOnExpedition: 1
