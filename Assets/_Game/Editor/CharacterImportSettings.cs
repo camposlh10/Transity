@@ -274,22 +274,12 @@ namespace Transity.EditorTools
                     continue;
                 }
 
-                // Preferred: the full locomotion graph built from the animation library.
-                // The single-idle controller below is only the fallback for a clone that
-                // does not have the package imported.
-                if (LocomotionControllerBuilder.PackagePresent)
+                // Preferred: the full locomotion graph, from whichever animation library is
+                // complete. The single-idle controller below is only the fallback for a
+                // clone with neither library imported.
+                if (LocomotionControllerBuilder.Build(entry.Model, entry.ClipSet) != null)
                 {
-                    var missing = LocomotionControllerBuilder.MissingClips(entry.ClipSet);
-                    if (missing.Count > 0)
-                    {
-                        Debug.LogWarning($"{entry.Model}: {missing.Count} locomotion clip(s) missing " +
-                                         $"({string.Join(", ", missing)}). Building anyway.");
-                    }
-
-                    if (LocomotionControllerBuilder.Build(entry.Model, entry.ClipSet) != null)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
                 var modelPath = $"{CharacterFolder}/{entry.Model}.fbx";

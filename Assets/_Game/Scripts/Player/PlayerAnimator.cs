@@ -24,6 +24,7 @@ namespace Transity.Player
         static readonly int MoveXId = Animator.StringToHash("MoveX");
         static readonly int MoveYId = Animator.StringToHash("MoveY");
         static readonly int GroundedId = Animator.StringToHash("Grounded");
+        static readonly int CrouchingId = Animator.StringToHash("Crouching");
         static readonly int JumpId = Animator.StringToHash("Jump");
 
         [SerializeField] CharacterSkin skin;
@@ -37,6 +38,11 @@ namespace Transity.Player
 
         readonly NetworkVariable<bool> m_Grounded = new(
             true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+        // Crouching is a chosen pose rather than something visible in the motion, so unlike
+        // speed it cannot be measured from displacement and has to be told to everyone.
+        readonly NetworkVariable<bool> m_Crouching = new(
+            false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         Animator m_Animator;
         Vector3 m_LastPosition;
@@ -148,6 +154,7 @@ namespace Transity.Player
             m_Animator.SetFloat(MoveXId, m_Direction.x);
             m_Animator.SetFloat(MoveYId, m_Direction.y);
             m_Animator.SetBool(GroundedId, m_Grounded.Value);
+            m_Animator.SetBool(CrouchingId, m_Crouching.Value);
 
             UpdateGripLayer(dt);
         }
@@ -190,6 +197,11 @@ namespace Transity.Player
             if (grounded != m_Grounded.Value)
             {
                 m_Grounded.Value = grounded;
+            }
+
+            if (movement.IsCrouching != m_Crouching.Value)
+            {
+                m_Crouching.Value = movement.IsCrouching;
             }
 
             // The jump itself is an event, not a state: by the time anyone reads "not

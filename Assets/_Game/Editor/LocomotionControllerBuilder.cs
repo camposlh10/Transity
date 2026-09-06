@@ -1,73 +1,104 @@
-using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+using Slot = Transity.EditorTools.LocomotionClipSet.Slot;
 
 namespace Transity.EditorTools
 {
     /// <summary>
-    /// Builds a locomotion Animator Controller from the Kevin Iglesias Human Basic Motions
-    /// clips, one per playable character.
+    /// Builds a locomotion Animator Controller for one character.
     ///
-    /// The shape is a 1D blend on speed (idle → walk → run → sprint) whose three moving
-    /// stops are each a 2D directional blend over eight compass directions. That split is
-    /// the whole trick: the runtime feeds <c>Speed</c> as metres per second and
-    /// <c>MoveX/MoveY</c> as a *normalised* direction, so the 2D trees are only ever
-    /// sampled out on the rim where the clips actually sit, and neither number has to know
-    /// anything about the other.
+    /// The shape is a 1D blend on speed (idle → walk → run → sprint) whose moving stops are
+    /// each a 2D directional blend. That split is the trick: the runtime feeds
+    /// <c>Speed</c> in metres per second and <c>MoveX/MoveY</c> as a *normalised*
+    /// direction, so the 2D trees are only ever sampled out on the rim where the clips sit,
+    /// and neither number has to know anything about the other.
     ///
-    /// The in-place clips are used, never the [RM] root-motion ones: movement is driven by
-    /// the CharacterController, and root motion would fight it.
+    /// Four cardinal directions rather than eight, because Mixamo has no diagonal
+    /// locomotion clips and a controller that changes shape depending on which library
+    /// filled it would be worse than one that is merely adequate in both. The diagonals
+    /// interpolate from their neighbours, which in first person nobody will ever study.
+    ///
+    /// Crouching is a separate branch rather than another speed stop: it is a pose the
+    /// player chooses, not a speed they happen to be at, and blending it by velocity would
+    /// stand them up every time they crouch-walked quickly.
     /// </summary>
     public static class LocomotionControllerBuilder
     {
-        const string PackageRoot = "Assets/Kevin Iglesias/Human Animations/Animations";
         const string OutputFolder = "Assets/_Game/Animation";
 
-        // Where each speed tier sits on the blend, in metres per second. Matched to
-        // FirstPersonController: crouch 1.8, walk 3.6, sprint 6.4. The clips are authored
-        // at roughly these speeds, so feet stay near the ground rather than skating.
+        // Where each tier sits on the speed blend. Matched to FirstPersonController:
+        // crouch 1.8, walk 3.6, sprint 6.4.
         const float WalkSpeed = 1.9f;
         const float RunSpeed = 4.2f;
         const float SprintSpeed = 6.4f;
+        const float CrouchWalkSpeed = 1.8f;
 
-        /// <summary>The eight compass directions, as the clip suffix and its blend position.</summary>
-        static readonly (string Suffix, Vector2 Position)[] Directions =
+        static readonly Vector2[] CardinalPositions =
         {
-            ("Forward", new Vector2(0f, 1f)),
-            ("ForwardLeft", new Vector2(-0.7071f, 0.7071f)),
-            ("ForwardRight", new Vector2(0.7071f, 0.7071f)),
-            ("Left", new Vector2(-1f, 0f)),
-            ("Right", new Vector2(1f, 0f)),
-            ("Backward", new Vector2(0f, -1f)),
-            ("BackwardLeft", new Vector2(-0.7071f, -0.7071f)),
-            ("BackwardRight", new Vector2(0.7071f, -0.7071f))
+            new(0f, 1f),    // forward
+            new(0f, -1f),   // backward
+            new(-1f, 0f),   // left
+            new(1f, 0f)     // right
         };
 
-        public static bool PackagePresent => AssetDatabase.IsValidFolder(PackageRoot);
+        static readonly Slot[] WalkSlots =
+        {
+            Slot.WalkForward, Slot.WalkBackward, Slot.WalkLeft, Slot.WalkRight
+        };
+
+        static readonly Slot[] RunSlots =
+        {
+            Slot.RunForward, Slot.RunBackward, Slot.RunLeft, Slot.RunRight
+        };
 
         /// <summary>
-        /// Builds a controller for one character. <paramref name="clipSet"/> is "Male" or
-        /// "Female" -- both retarget onto any Humanoid rig, so this only picks the style of
-        /// the motion, never whether it fits.
+        /// Picks the best available library. Mixamo wins once its set is complete, because
+        /// that is what the project is moving to; until then the Kevin Iglesias package
+        /// keeps the characters animating rather than T-posing.
         /// </summary>
+        public static LocomotionClipSet SelectClipSet(string clipSet, bool logChoice)
+        {
+            var mixamo = new MixamoClipSet();
+            if (mixamo.IsComplete)
+            {
+                return mixamo;
+            }
+
+            var fallback = KevinIglesiasClipSet.PackagePresent ? new KevinIglesiasClipSet(clipSet) : null;
+
+            if (logChoice)
+            {
+                var missing = mixamo.DescribeMissing();
+                Debug.Log($"<b>Transity</b>: Mixamo set incomplete, still needed: {missing}. " +
+                          (fallback != null
+                              ? "Using the Kevin Iglesias package until then."
+                              : "No fallback library present; characters will not animate."));
+            }
+
+            return fallback;
+        }
+
         public static AnimatorController Build(string characterId, string clipSet)
         {
-            if (!PackagePresent)
+            var clips = SelectClipSet(clipSet, logChoice: characterId.EndsWith("Girl"));
+            if (clips == null)
             {
-                Debug.LogWarning($"Human Basic Motions not found at {PackageRoot}; " +
-                                 "characters will keep their single-idle controllers.");
                 return null;
+            }
+
+            if (!clips.IsComplete)
+            {
+                var missing = string.Join(", ", clips.Missing());
+                Debug.LogWarning($"{characterId}: {clips.Name} is missing {missing}. Building anyway.");
             }
 
             GrayboxKit.EnsureFolder(OutputFolder);
 
-            var prefix = clipSet == "Female" ? "HumanF" : "HumanM";
             var path = $"{OutputFolder}/{characterId}_Locomotion.controller";
 
-            // Rebuilt from scratch each run: patching an existing graph in place is how you
-            // end up with orphaned states nobody can see in the window.
+            // Rebuilt from scratch: patching a graph in place is how you end up with
+            // orphaned states nobody can see in the window.
             AssetDatabase.DeleteAsset(path);
             var controller = AnimatorController.CreateAnimatorControllerAtPath(path);
 
@@ -75,37 +106,50 @@ namespace Transity.EditorTools
             controller.AddParameter("MoveX", AnimatorControllerParameterType.Float);
             controller.AddParameter("MoveY", AnimatorControllerParameterType.Float);
             controller.AddParameter("Grounded", AnimatorControllerParameterType.Bool);
+            controller.AddParameter("Crouching", AnimatorControllerParameterType.Bool);
             controller.AddParameter("Jump", AnimatorControllerParameterType.Trigger);
 
             var machine = controller.layers[0].stateMachine;
+            var idle = clips.Resolve(Slot.Idle);
 
-            // ---- locomotion ------------------------------------------------
+            // ---- standing locomotion ---------------------------------------
             var locomotion = controller.CreateBlendTreeInController("Locomotion", out var tree);
             tree.blendType = BlendTreeType.Simple1D;
             tree.blendParameter = "Speed";
             tree.useAutomaticThresholds = false;
 
-            var idle = LoadClip($"{PackageRoot}/{clipSet}/Idles/{prefix}@Idle01.fbx");
             if (idle != null)
             {
                 tree.AddChild(idle, 0f);
             }
 
-            AddDirectionalTier(tree, clipSet, prefix, "Walk", "Walk01", WalkSpeed, idle);
-            AddDirectionalTier(tree, clipSet, prefix, "Run", "Run01", RunSpeed, idle);
-            AddDirectionalTier(tree, clipSet, prefix, "Sprint", "Sprint01", SprintSpeed, idle);
+            AddTier(tree, clips, idle, WalkSpeed, "Walk", WalkSlots);
+            AddTier(tree, clips, idle, RunSpeed, "Run", RunSlots);
+            AddSprintTier(tree, clips, idle);
 
             machine.defaultState = locomotion;
 
-            // ---- jump and fall ---------------------------------------------
-            var jumpBegin = AddState(machine, "JumpBegin",
-                LoadClip($"{PackageRoot}/{clipSet}/Movement/Jump/{prefix}@Jump01 - Begin.fbx"));
-            var airborne = AddState(machine, "Airborne",
-                LoadClip($"{PackageRoot}/{clipSet}/Movement/Jump/{prefix}@Fall01.fbx"));
-            var land = AddState(machine, "Land",
-                LoadClip($"{PackageRoot}/{clipSet}/Movement/Jump/{prefix}@Jump01 - Land.fbx"));
+            // ---- crouching -------------------------------------------------
+            var crouch = BuildCrouch(controller, clips, idle);
 
-            // A jump can start from anything, including mid-land.
+            if (crouch != null)
+            {
+                var down = locomotion.AddTransition(crouch);
+                down.AddCondition(AnimatorConditionMode.If, 0f, "Crouching");
+                down.hasExitTime = false;
+                down.duration = 0.2f;
+
+                var up = crouch.AddTransition(locomotion);
+                up.AddCondition(AnimatorConditionMode.IfNot, 0f, "Crouching");
+                up.hasExitTime = false;
+                up.duration = 0.2f;
+            }
+
+            // ---- jump and fall ---------------------------------------------
+            var jumpBegin = AddState(machine, "JumpBegin", clips.Resolve(Slot.JumpBegin));
+            var airborne = AddState(machine, "Airborne", clips.Resolve(Slot.Airborne));
+            var land = AddState(machine, "Land", clips.Resolve(Slot.Land));
+
             var toJump = machine.AddAnyStateTransition(jumpBegin);
             toJump.AddCondition(AnimatorConditionMode.If, 0f, "Jump");
             toJump.duration = 0.05f;
@@ -136,6 +180,121 @@ namespace Transity.EditorTools
         }
 
         /// <summary>
+        /// One speed tier as a 2D directional blend nested in the speed blend. Slots are
+        /// passed explicitly rather than derived by offsetting the enum, so reordering the
+        /// enum cannot quietly point a tier at the wrong clips.
+        /// </summary>
+        static void AddTier(BlendTree parent, LocomotionClipSet clips, AnimationClip centre,
+            float threshold, string tierName, Slot[] slots)
+        {
+            var tier = parent.CreateBlendTreeChild(threshold);
+            tier.name = tierName;
+            tier.blendType = BlendTreeType.FreeformDirectional2D;
+            tier.blendParameter = "MoveX";
+            tier.blendParameterY = "MoveY";
+
+            // Freeform Directional needs a motion at the origin to weight against. The
+            // runtime keeps the direction on the unit circle so this is never sampled; it
+            // is here to define the centre, not to be played.
+            if (centre != null)
+            {
+                tier.AddChild(centre, Vector2.zero);
+            }
+
+            var added = 0;
+            for (var i = 0; i < slots.Length; i++)
+            {
+                var clip = clips.Resolve(slots[i]);
+                if (clip == null)
+                {
+                    Debug.LogWarning($"Locomotion: no clip for {slots[i]}.");
+                    continue;
+                }
+
+                tier.AddChild(clip, CardinalPositions[i]);
+                added++;
+            }
+
+            if (added == 0)
+            {
+                Debug.LogError($"Locomotion tier '{tierName}' has no clips; the blend will freeze.");
+            }
+        }
+
+        /// <summary>
+        /// Sprint, which only ever has a forward clip. The sideways and backward stops fall
+        /// back to the run set: nobody sprints backwards, and leaving those directions
+        /// empty would smear the forward clip across them.
+        /// </summary>
+        static void AddSprintTier(BlendTree parent, LocomotionClipSet clips, AnimationClip centre)
+        {
+            var forward = clips.Resolve(Slot.SprintForward) ?? clips.Resolve(Slot.RunForward);
+            if (forward == null)
+            {
+                return;
+            }
+
+            var tier = parent.CreateBlendTreeChild(SprintSpeed);
+            tier.name = "Sprint";
+            tier.blendType = BlendTreeType.FreeformDirectional2D;
+            tier.blendParameter = "MoveX";
+            tier.blendParameterY = "MoveY";
+
+            if (centre != null)
+            {
+                tier.AddChild(centre, Vector2.zero);
+            }
+
+            tier.AddChild(forward, new Vector2(0f, 1f));
+
+            foreach (var (slot, position) in new[]
+                     {
+                         (Slot.RunBackward, new Vector2(0f, -1f)),
+                         (Slot.RunLeft, new Vector2(-1f, 0f)),
+                         (Slot.RunRight, new Vector2(1f, 0f))
+                     })
+            {
+                var clip = clips.Resolve(slot);
+                if (clip != null)
+                {
+                    tier.AddChild(clip, position);
+                }
+            }
+        }
+
+        /// <summary>
+        /// The crouch branch: a small speed blend of its own, so crouch-walking still reads
+        /// as movement rather than snapping between two poses.
+        /// </summary>
+        static AnimatorState BuildCrouch(AnimatorController controller, LocomotionClipSet clips,
+            AnimationClip standingIdle)
+        {
+            var crouchIdle = clips.Resolve(Slot.CrouchIdle);
+            var crouchWalk = clips.Resolve(Slot.CrouchWalk);
+
+            if (crouchIdle == null && crouchWalk == null)
+            {
+                return null;
+            }
+
+            var state = controller.CreateBlendTreeInController("Crouch", out var tree);
+            tree.blendType = BlendTreeType.Simple1D;
+            tree.blendParameter = "Speed";
+            tree.useAutomaticThresholds = false;
+
+            // Falling back to the standing idle is visibly wrong, but far less wrong than a
+            // frozen T-pose while someone holds crouch.
+            tree.AddChild(crouchIdle ?? standingIdle, 0f);
+
+            if (crouchWalk != null)
+            {
+                tree.AddChild(crouchWalk, CrouchWalkSpeed);
+            }
+
+            return state;
+        }
+
+        /// <summary>
         /// An upper-body override layer holding the arms in a grip pose.
         ///
         /// Without it the locomotion clips swing both arms freely, so a hunter sprinting
@@ -145,9 +304,13 @@ namespace Transity.EditorTools
         /// </summary>
         static void AddGripLayer(AnimatorController controller)
         {
-            var pose = LoadClip($"{PackageRoot}/Masked Poses/Human@ObjectGripHands01.fbx");
-            var mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(
-                "Assets/Kevin Iglesias/Human Animations/Models/Avatar Masks/Human Body Upper Mask.mask");
+            const string maskPath =
+                "Assets/Kevin Iglesias/Human Animations/Models/Avatar Masks/Human Body Upper Mask.mask";
+            const string posePath =
+                "Assets/Kevin Iglesias/Human Animations/Animations/Masked Poses/Human@ObjectGripHands01.fbx";
+
+            var pose = LocomotionClipSet.LoadClipAt(posePath);
+            var mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(maskPath);
 
             if (pose == null || mask == null)
             {
@@ -159,7 +322,7 @@ namespace Transity.EditorTools
             controller.AddLayer(new AnimatorControllerLayer
             {
                 name = "Grip",
-                defaultWeight = 0f,      // faded in by PlayerEquipment when an item is held
+                defaultWeight = 0f,      // faded in by PlayerAnimator when an item is held
                 avatarMask = mask,
                 blendingMode = AnimatorLayerBlendingMode.Override,
                 stateMachine = new AnimatorStateMachine
@@ -181,56 +344,6 @@ namespace Transity.EditorTools
             layer.stateMachine.defaultState = state;
         }
 
-        /// <summary>
-        /// Adds one speed tier as a 2D directional blend nested in the speed blend.
-        /// </summary>
-        static void AddDirectionalTier(BlendTree parent, string clipSet, string prefix,
-            string folder, string clipStem, float threshold, AnimationClip centre)
-        {
-            var tier = parent.CreateBlendTreeChild(threshold);
-            tier.name = folder;
-            tier.blendType = BlendTreeType.FreeformDirectional2D;
-            tier.blendParameter = "MoveX";
-            tier.blendParameterY = "MoveY";
-
-            // Freeform Directional needs a motion at the origin to compute its weights
-            // against. The runtime keeps the direction on the unit circle so this is never
-            // actually sampled -- it is here to define the centre, not to be played.
-            if (centre != null)
-            {
-                tier.AddChild(centre, Vector2.zero);
-            }
-
-            var added = 0;
-
-            foreach (var (suffix, position) in Directions)
-            {
-                var clip = LoadClip($"{PackageRoot}/{clipSet}/Movement/{folder}/{prefix}@{clipStem}_{suffix}.fbx");
-
-                // The free sprint set ships forwards and sideways only. Backing away at a
-                // sprint is not a thing the pack covers, so those directions borrow the run
-                // clips rather than leaving a hole the blend would smear across.
-                if (clip == null && folder == "Sprint")
-                {
-                    clip = LoadClip($"{PackageRoot}/{clipSet}/Movement/Run/{prefix}@Run01_{suffix}.fbx");
-                }
-
-                if (clip == null)
-                {
-                    Debug.LogWarning($"Locomotion: no clip for {folder} {suffix} ({prefix}).");
-                    continue;
-                }
-
-                tier.AddChild(clip, position);
-                added++;
-            }
-
-            if (added == 0)
-            {
-                Debug.LogError($"Locomotion tier '{folder}' has no clips; the blend will freeze there.");
-            }
-        }
-
         static AnimatorState AddState(AnimatorStateMachine machine, string stateName, Motion motion)
         {
             var state = machine.AddState(stateName);
@@ -250,56 +363,6 @@ namespace Transity.EditorTools
             transition.hasExitTime = true;
             transition.exitTime = exitTime;
             transition.duration = duration;
-        }
-
-        /// <summary>
-        /// The clip is a sub-asset of the FBX, so it has to be dug out. Unity also creates
-        /// a __preview__ clip alongside the real one, which must be skipped.
-        /// </summary>
-        static AnimationClip LoadClip(string fbxPath)
-        {
-            if (!File.Exists(fbxPath))
-            {
-                return null;
-            }
-
-            foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(fbxPath))
-            {
-                if (asset is AnimationClip clip && !clip.name.StartsWith("__"))
-                {
-                    return clip;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>Reports which of the clips the controller wants are missing.</summary>
-        public static List<string> MissingClips(string clipSet)
-        {
-            var prefix = clipSet == "Female" ? "HumanF" : "HumanM";
-            var missing = new List<string>();
-
-            void Check(string path)
-            {
-                if (LoadClip(path) == null)
-                {
-                    missing.Add(Path.GetFileNameWithoutExtension(path));
-                }
-            }
-
-            Check($"{PackageRoot}/{clipSet}/Idles/{prefix}@Idle01.fbx");
-            Check($"{PackageRoot}/{clipSet}/Movement/Jump/{prefix}@Jump01 - Begin.fbx");
-            Check($"{PackageRoot}/{clipSet}/Movement/Jump/{prefix}@Fall01.fbx");
-            Check($"{PackageRoot}/{clipSet}/Movement/Jump/{prefix}@Jump01 - Land.fbx");
-
-            foreach (var (suffix, _) in Directions)
-            {
-                Check($"{PackageRoot}/{clipSet}/Movement/Walk/{prefix}@Walk01_{suffix}.fbx");
-                Check($"{PackageRoot}/{clipSet}/Movement/Run/{prefix}@Run01_{suffix}.fbx");
-            }
-
-            return missing;
         }
     }
 }

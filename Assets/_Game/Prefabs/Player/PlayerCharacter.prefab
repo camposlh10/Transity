@@ -64,7 +64,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 297375402073978388}
+  m_Father: {fileID: 5865101929132685919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!108 &4561111517972568873
 Light:
@@ -160,41 +160,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 297375402073978388}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3506637799670889267
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 297375402073978388}
-  m_Layer: 7
-  m_Name: Head
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &297375402073978388
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3506637799670889267}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.65, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2113015276276225770}
-  - {fileID: 7560729169381552667}
-  - {fileID: 4268211276392065295}
-  m_Father: {fileID: 7569038431821000801}
+  m_Father: {fileID: 5865101929132685919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5424879049938629416
 GameObject:
@@ -228,7 +194,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 996609661839341070}
-  m_Father: {fileID: 297375402073978388}
+  m_Father: {fileID: 5865101929132685919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &5834159664122836424
 Camera:
@@ -289,6 +255,40 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5424879049938629416}
   m_Enabled: 1
+--- !u!1 &5761008605835270607
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5865101929132685919}
+  m_Layer: 7
+  m_Name: Head
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5865101929132685919
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5761008605835270607}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.65, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2113015276276225770}
+  - {fileID: 7560729169381552667}
+  - {fileID: 4268211276392065295}
+  m_Father: {fileID: 7569038431821000801}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7438686746923339353
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,7 +440,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 957739295034819808}
-  - {fileID: 297375402073978388}
+  - {fileID: 5865101929132685919}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &3908024816618392800
@@ -568,7 +568,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Transity.Runtime::Transity.Player.PlayerLook
   body: {fileID: 7569038431821000801}
-  headPivot: {fileID: 297375402073978388}
+  headPivot: {fileID: 5865101929132685919}
   input: {fileID: 3034599766673169213}
   sensitivity: 0.12
   minPitch: -85
@@ -603,7 +603,7 @@ MonoBehaviour:
   gravity: -19.6
   groundedStick: -2
   jumpStaminaCost: 10
-  headPivot: {fileID: 297375402073978388}
+  headPivot: {fileID: 5865101929132685919}
   headHeightStanding: 1.65
   headHeightCrouched: 0.95
   bobAmplitude: 0.035
@@ -629,7 +629,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Transity.Runtime::Transity.Interaction.Interactor
   ShowTopMostFoldoutHeaderGroup: 1
   input: {fileID: 3034599766673169213}
-  rayOrigin: {fileID: 297375402073978388}
+  rayOrigin: {fileID: 5865101929132685919}
   maxRange: 3.2
   sphereCastRadius: 0.12
   interactableMask:
@@ -800,7 +800,7 @@ MonoBehaviour:
   look: {fileID: 6896743360726559408}
   character: {fileID: 2977837209707383682}
   health: {fileID: 968241912635799559}
-  remoteHandSocket: {fileID: 297375402073978388}
+  remoteHandSocket: {fileID: 5865101929132685919}
   muzzleLight: {fileID: 3609076462049879222}
   defaultFieldOfView: 70
   aimBlendSpeed: 12

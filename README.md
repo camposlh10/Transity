@@ -240,6 +240,31 @@ being seen and keep a bonus. It is deliberately awkward to act on.
 - The warm train interior should read as a different world from the cold forest — the
   blockout scenes already set that contrast in ambient and fog.
 
+### Character animation
+
+Locomotion controllers are generated per character, not hand-assembled: a 1D blend on speed
+(idle → walk → run → sprint) whose moving stops are each a 2D directional blend, plus a
+crouch branch and jump states. The runtime feeds `Speed` in metres per second and
+`MoveX/MoveY` as a normalised direction, so the directional trees are only ever sampled on
+the rim where the clips sit.
+
+Two libraries can fill it, chosen automatically by `LocomotionControllerBuilder`:
+
+- **Mixamo** (`Art/Animations/Mixamo`) — used as soon as its set is complete. Clips are
+  matched by file name against a list of aliases, because Mixamo's own naming drifts.
+- **Kevin Iglesias Human Basic Motions** — the fallback, so characters animate rather than
+  T-pose while the Mixamo set is still being assembled.
+
+`Tools > Transity > Animation Status` says which is in use and what is missing.
+
+Four cardinal directions, not eight: Mixamo has no diagonal locomotion clips, and a
+controller that changed shape depending on which library filled it would be worse than one
+that is merely adequate in both. Diagonals interpolate from their neighbours.
+
+Mixamo clips import through `MixamoImportSettings`, which sets them Humanoid, renames the
+take (every Mixamo file calls it "mixamo.com"), and bakes the root flat — movement comes
+from the CharacterController, so any translation left on a clip fights it.
+
 ### Equipment (Hunter Depot collection)
 
 The 27 gear models in `Art/Equipment` were not shipped as meshes. The drop is a set of
